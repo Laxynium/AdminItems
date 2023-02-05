@@ -2,6 +2,8 @@
 
 namespace AdminItems.Api;
 
+public record AdminItemDto(string Code, string Name, string Comments);
+
 [ApiController]
 [Route("[controller]")]
 public class AdminItemsController : ControllerBase
@@ -12,13 +14,14 @@ public class AdminItemsController : ControllerBase
     {
         _adminItemsStore = adminItemsStore;
     }
+    
     [HttpPost]
-    public Task Post()
+    public Task Post([FromBody] AdminItemDto dto)
     {
         _adminItemsStore.Add(new AdminItem(
-            "GFJS1234",
-            "First Admin Item",
-            "This is a first admin item in system"));
+            dto.Code,
+            dto.Name,
+            dto.Comments));
         return Task.CompletedTask;
     }
 }

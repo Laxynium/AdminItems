@@ -25,6 +25,7 @@ public class CreateAdminItemEndpointTests
 
     [Theory]
     [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
+    [InlineData("YTRA1235", "Another admin Item", "")]
     public async Task valid_admin_item_is_added_to_store(string code, string name, string comments)
     {
         var fakeStore = new FakeAdminItemsStore();
