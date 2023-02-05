@@ -18,6 +18,8 @@ app.UseAuthorization();
 
 app.MapGet("", ctx => Task.FromResult("Hello World"));
 
+app.MapControllers();
+
 app.Run();
 
 internal partial class Program{}
