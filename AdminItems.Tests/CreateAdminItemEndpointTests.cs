@@ -26,7 +26,9 @@ public class CreateAdminItemEndpointTests
 
     [Theory]
     [InlineData(null, "Second admin item", "This is second admin item", "Code")]
+    [InlineData("", "Second admin item", "This is second admin item", "Code")]
     [InlineData("321ADFA", null, "Another description", "Name")]
+    [InlineData("321ADFA", "", "Another description", "Name")]
     public async Task invalid_admin_item(string? code, string? name, string? comments, string expectedField)
     {
         var fakeStore = new FakeAdminItemsStore();

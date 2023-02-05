@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AdminItems.Api;
 
-public record AdminItemDto(string Code, string Name, string? Comments);
+public record AdminItemDto([Required]string Code, [Required]string Name, string? Comments);
 
 [ApiController]
 [Route("[controller]")]
@@ -21,7 +22,7 @@ public class AdminItemsController : ControllerBase
         _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
-            dto.Comments ?? string.Empty));
+            dto.Comments!));
         return Task.CompletedTask;
     }
 }
