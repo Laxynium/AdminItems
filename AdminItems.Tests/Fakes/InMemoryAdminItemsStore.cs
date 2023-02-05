@@ -12,6 +12,12 @@ public class InMemoryAdminItemsStore : Collection<AdminItem>, IAdminItemsStore
         return Task.CompletedTask;
     }
 
+    public Task Update(long id, AdminItem adminItem)
+    {
+        base.SetItem(0, adminItem);
+        return Task.CompletedTask;
+    }
+
     public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
         Func<AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer) => 
