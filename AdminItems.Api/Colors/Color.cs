@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace AdminItems.Api;
+namespace AdminItems.Api.Colors;
 
 public class Color : Entity<long>
 {

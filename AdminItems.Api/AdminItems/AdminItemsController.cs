@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminItems.Api;
+namespace AdminItems.Api.AdminItems;
 
 public record AdminItemDto([Required][StringLength(12)]string Code, [Required][StringLength(200)]string Name, string? Comments);
 

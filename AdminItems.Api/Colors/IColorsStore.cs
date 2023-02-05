@@ -1,4 +1,4 @@
-namespace AdminItems.Api;
+namespace AdminItems.Api.Colors;
 
 public interface IColorsStore
 {

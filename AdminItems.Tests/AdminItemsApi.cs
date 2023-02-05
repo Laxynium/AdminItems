@@ -1,13 +1,15 @@
 ﻿using System.Text;
 using System.Text.Json;
 using AdminItems.Api;
+using AdminItems.Api.AdminItems;
+using AdminItems.Api.Colors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AdminItems.Tests;
 
-public class AdminItemsApi : WebApplicationFactory<Program>
+public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {
     private FakeAdminItemsStore _fakeAdminItemsStore = new();
     private FakeColorsStore _fakeColorsStore = new();

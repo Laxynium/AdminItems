@@ -1,4 +1,4 @@
-using AdminItems.Api;
+using AdminItems.Api.AdminItems;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,4 +24,7 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program{}
+namespace AdminItems.Api
+{
+    public partial class Program{}
+}

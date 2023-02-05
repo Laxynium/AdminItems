@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AdminItems.Api;
+namespace AdminItems.Api.Colors;
 
 public record Response(IReadOnlyList<ColorDto> Items);
 public record ColorDto(long Id, string Name);

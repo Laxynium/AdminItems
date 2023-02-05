@@ -1,4 +1,4 @@
-namespace AdminItems.Api;
+namespace AdminItems.Api.AdminItems;
 
 public interface IAdminItemsStore
 {
