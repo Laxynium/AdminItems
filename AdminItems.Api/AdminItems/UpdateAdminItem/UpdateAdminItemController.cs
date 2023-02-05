@@ -20,6 +20,7 @@ public class UpdateAdminItemController : ControllerBase
     {
         _adminItemsStore = adminItemsStore;
     }
+    
     [HttpPut("{adminItemId}")]
     public async Task Put([FromRoute]long adminItemId, [FromBody] AdminItemDto dto)
     {

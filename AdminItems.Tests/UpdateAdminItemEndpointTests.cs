@@ -151,4 +151,70 @@ public class UpdateAdminItemEndpointTests
             "",
             DefaultColor));
     }
+    
+    [Theory]
+    [InlineData(null, "Second admin item", "This is second admin item", "Code")]
+    [InlineData("", "Second admin item", "This is second admin item", "Code")]
+    [InlineData("321ADFA", null, "Another description", "Name")]
+    [InlineData("321ADFA", "", "Another description", "Name")]
+    public async Task invalid_admin_item(string? code, string? name, string? comments, string expectedField)
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+
+        var request = new
+        {
+            code = code,
+            name = name,
+            colorId = DefaultColorId,
+            comments = comments
+        };
+        var response = await apiFactory.PutAdminItem(1, request);
+
+        response.Should().Be400BadRequest()
+            .And.HaveError(expectedField, "*required*");
+    }
+    
+    [Theory]
+    [InlineData("ASADBDAS1235X")]
+    [InlineData("GSGEZDAS1235YZ")]
+    public async Task code_cannot_have_more_than_12_characters(string code)
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+
+        var request = new
+        {
+            code = code,
+            name = "NotRelevant",
+            colorId = DefaultColorId,
+            comments = "NotRelevant"
+        };
+        var response = await apiFactory.PutAdminItem(1, request);
+
+        response.Should().Be400BadRequest()
+            .And.HaveError("Code", "*max*");
+    }
+
+    [Fact]
+    public async Task name_cannot_have_more_than_200_characters()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+
+        var name = new string('X', 200);
+        var response = await apiFactory.PutAdminItem(1, new
+        {
+            code = "ASDBD123",
+            name = name + "Y",
+            colorId = DefaultColorId,
+            comments = "NotRelevant"
+        });
+
+        response.Should().Be400BadRequest()
+            .And.HaveError("Name", "*max*");
+    }
 }
