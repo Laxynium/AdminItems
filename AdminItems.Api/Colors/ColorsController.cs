@@ -18,10 +18,10 @@ public class ColorsController : ControllerBase
     }
 
     [HttpGet]
-    public Task<Response> Get()
+    public async Task<Response> Get()
     {
-        var colors = _colorsStore.GetAll(x => new ColorDto(x.Id, x.Name));
+        var colors = await _colorsStore.GetAll(x => new ColorDto(x.Id, x.Name));
         var response = new Response(colors);
-        return Task.FromResult(response);
+        return response;
     }
 }

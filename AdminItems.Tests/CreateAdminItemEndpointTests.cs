@@ -8,6 +8,7 @@ namespace AdminItems.Tests;
 
 public class CreateAdminItemEndpointTests
 {
+    private const long DefaultColorId = 1;
     private const string DefaultColor = "indigo";
     [Theory]
     [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
@@ -15,11 +16,20 @@ public class CreateAdminItemEndpointTests
     [InlineData("1234567890AB", "Another one", "Admin item with max 12 characters")]
     public async Task valid_admin_item_is_added_to_store(string? code, string? name, string? comments)
     {
+        var colorsStore = new InMemoryColorsStore();
+        colorsStore.AddColors(new []{new Color(DefaultColorId, DefaultColor)});
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
         apiFactory.UseStore(adminItemsStore);
+        apiFactory.UseStore(colorsStore);
 
-        var request = new { code, name, comments };
+        var request = new
+        {
+            code, 
+            name, 
+            colorId = DefaultColorId,
+            comments
+        };
         var response = await apiFactory.PostAdminItem(request);
 
         response.Should().Be200Ok();
@@ -33,12 +43,21 @@ public class CreateAdminItemEndpointTests
     [Fact]
     public async Task admin_item_with_200_chars_in_name_is_added_to_store()
     {
+        var colorsStore = new InMemoryColorsStore();
+        colorsStore.AddColors(new []{new Color(DefaultColorId, DefaultColor)});
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
         apiFactory.UseStore(adminItemsStore);
+        apiFactory.UseStore(colorsStore);
 
         var name = new string('A', 200);
-        var request = new { code = "ADSA321A", name, comments = "200 characters admin item" };
+        var request = new
+        {
+            code = "ADSA321A", 
+            name,
+            colorId = DefaultColorId,
+            comments = "200 characters admin item"
+        };
         var response = await apiFactory.PostAdminItem(request);
         
         response.Should().Be200Ok();
@@ -52,14 +71,18 @@ public class CreateAdminItemEndpointTests
     [Fact]
     public async Task null_comments_are_normalized_to_empty_string()
     {
+        var colorsStore = new InMemoryColorsStore();
+        colorsStore.AddColors(new []{new Color(DefaultColorId, DefaultColor)});
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
         apiFactory.UseStore(adminItemsStore);
+        apiFactory.UseStore(colorsStore);
         
         var request = new
         {
             code = "DSAD123", 
-            name = "Some admin X item", 
+            name = "Some admin X item",
+            colorId = DefaultColorId,
             comments = (string)null!
         };
         var response = await apiFactory.PostAdminItem(request);
@@ -149,5 +172,27 @@ public class CreateAdminItemEndpointTests
             request.name,
             request.comments,
             "midnight"));
+    }
+
+    [Fact]
+    public async Task invalid_request_when_color_is_not_in_store()
+    {
+        var colorsStore = new InMemoryColorsStore();
+        colorsStore.AddColors(Array.Empty<Color>());
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = new AdminItemsApi();
+        apiFactory.UseStore(adminItemsStore);
+        apiFactory.UseStore(colorsStore);
+
+        var request = new
+        {
+            code = "DSAG1235",
+            name = "Y admin item",
+            comments = "Some not important comment",
+            colorId = 5
+        };
+        var response = await apiFactory.PostAdminItem(request);
+        
+        response.Should().Be400BadRequest();
     }
 }

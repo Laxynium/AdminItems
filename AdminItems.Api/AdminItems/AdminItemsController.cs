@@ -25,15 +25,22 @@ public class AdminItemsController : ControllerBase
     }
 
     [HttpPost]
-    public Task Post([FromBody] AdminItemDto dto)
+    public async Task<IActionResult> Post([FromBody] AdminItemDto dto)
     {
-        var colors = _colorsStore.GetAll(x => x);
+        var colors = await _colorsStore.GetAll(x => x);
         var color = colors.FirstOrDefault(x => x.Id == dto.ColorId);
-        _adminItemsStore.Add(new AdminItem(
+        if (color is null)
+        {
+            return BadRequest();
+        }
+
+        var colorName = color.Name;
+        await _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
             dto.Comments ?? string.Empty,
-            color?.Name ?? "indigo"));
-        return Task.CompletedTask;
+            colorName));
+        
+        return Ok();
     }
 }

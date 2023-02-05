@@ -11,8 +11,8 @@ public class InMemoryColorsStore : IColorsStore
         _colors = colors;
     }
 
-    public IReadOnlyList<TResult> GetAll<TResult>(Func<Color, TResult> mapper) =>
-        _colors
+    public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper) =>
+        Task.FromResult(_colors
             .Select(mapper)
-            .ToList();
+            .ToList() as IReadOnlyList<TResult>);
 }
