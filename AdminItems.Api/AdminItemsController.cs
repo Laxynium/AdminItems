@@ -2,7 +2,7 @@
 
 namespace AdminItems.Api;
 
-public record AdminItemDto(string Code, string Name, string Comments);
+public record AdminItemDto(string Code, string Name, string? Comments);
 
 [ApiController]
 [Route("[controller]")]
@@ -21,7 +21,7 @@ public class AdminItemsController : ControllerBase
         _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
-            dto.Comments));
+            dto.Comments ?? string.Empty));
         return Task.CompletedTask;
     }
 }
