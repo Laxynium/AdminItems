@@ -248,6 +248,27 @@ public class UpdateAdminItemEndpointTests
         response.Should().Be400BadRequest()
             .And.HaveError("ColorId", "*not found*");
     }
+
+    [Fact]
+    public async Task cannot_update_not_existing_admin_item()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+        var id = await apiFactory.ThereIsAnAdminItem(ARequest(
+            "GAD1235",
+            "Some X item name",
+            "Some X item comments"
+        ));
+        
+        var response = await apiFactory.PutAdminItem(315, ARequest(
+            "FDAS123",
+            "Whatever it should fail anyways",
+            "Whatever it should fail anyways"
+        ));
+
+        response.Should().Be404NotFound();
+    }
     
     private static Request ARequest(
         string? code, string? name, string? comments) =>

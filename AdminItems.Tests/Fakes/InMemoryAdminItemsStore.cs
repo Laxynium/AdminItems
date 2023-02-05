@@ -27,4 +27,7 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
             .OrderBy(x => orderer(x.value))
             .Select(x => mapper(x.key, x.value))
             .ToList() as IReadOnlyList<TResult>);
+
+    public Task<bool> Contains(AdminItemId id) => 
+        Task.FromResult(ContainsKey(id));
 }

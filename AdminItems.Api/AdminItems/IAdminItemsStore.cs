@@ -9,6 +9,8 @@ public interface IAdminItemsStore
     Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
         Func<AdminItemId, AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer);
+
+    Task<bool> Contains(AdminItemId id);
 }
 
 internal sealed class NullAdminItemsStore : IAdminItemsStore
@@ -26,4 +28,9 @@ internal sealed class NullAdminItemsStore : IAdminItemsStore
     public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer) => 
         Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
+
+    public Task<bool> Contains(AdminItemId id)
+    {
+        return Task.FromResult(false);
+    }
 }
