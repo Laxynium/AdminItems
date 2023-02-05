@@ -1,16 +1,13 @@
 ﻿using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
 using AdminItems.Tests.Fakes;
-using AdminItems.Tests.Shared;
 using FluentAssertions;
+using static AdminItems.Tests.Shared.Fixtures;
 
 namespace AdminItems.Tests;
 
 public class CreateAdminItemEndpointTests
 {
-    private const long DefaultColorId = 1;
-    private const string DefaultColor = "indigo";
-
     [Theory]
     [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
     [InlineData("YTRA1235", "Another admin Item", "")]
@@ -171,19 +168,4 @@ public class CreateAdminItemEndpointTests
         new (code, name, comments, colorId);
     
     private record Request(string? Code, string? Name, string? Comments, long ColorId);
-
-    private static AdminItemsApi AnAdminItemsApi(InMemoryAdminItemsStore adminItemsStore) => 
-        AnAdminItemsApiWith(adminItemsStore, new Color(DefaultColorId, DefaultColor));
-
-    private static AdminItemsApi AnAdminItemsApiWith(InMemoryAdminItemsStore adminItemsStore, params Color[] colors)
-    {
-        var colorsStore = new InMemoryColorsStore();
-        colorsStore.AddColors(colors);
-        
-        var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(adminItemsStore);
-        apiFactory.UseStore(colorsStore);
-
-        return apiFactory;
-    }
 }

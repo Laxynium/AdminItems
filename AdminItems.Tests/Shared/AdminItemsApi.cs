@@ -13,7 +13,7 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {
     private IAdminItemsStore _adminItemsStore = new InMemoryAdminItemsStore();
     private IColorsStore _colorsStore = new InMemoryColorsStore();
-
+    
     public void UseStore(IAdminItemsStore inMemoryAdminItemsStore)
     {
         _adminItemsStore = inMemoryAdminItemsStore;
