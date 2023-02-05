@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminItems.Api", "AdminItems.Api\AdminItems.Api.csproj", "{79E7547A-FF0D-476C-B224-FF18E4E9AABC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminItems.Tests", "AdminItems.Tests\AdminItems.Tests.csproj", "{0F716DC9-2329-4BAE-890D-42AB39A587EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79E7547A-FF0D-476C-B224-FF18E4E9AABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79E7547A-FF0D-476C-B224-FF18E4E9AABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79E7547A-FF0D-476C-B224-FF18E4E9AABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79E7547A-FF0D-476C-B224-FF18E4E9AABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F716DC9-2329-4BAE-890D-42AB39A587EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F716DC9-2329-4BAE-890D-42AB39A587EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F716DC9-2329-4BAE-890D-42AB39A587EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F716DC9-2329-4BAE-890D-42AB39A587EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
