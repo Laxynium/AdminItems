@@ -39,7 +39,7 @@ public class UpdateAdminItemEndpointTests
             comments!,
             DefaultColor));
     }
-
+    
     [Fact]
     public async Task put_a_valid_admin_item_when_there_are_many_admin_items()
     {
@@ -86,6 +86,69 @@ public class UpdateAdminItemEndpointTests
             "GFDS123",
             "Second admin item",
             "Another comment",
+            DefaultColor));
+    }
+    
+    [Fact]
+    public async Task admin_item_with_200_chars_in_name()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+        var id = await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "DSA123",
+            name = "Some item name",
+            colorId = DefaultColorId,
+            comments = "Some comments"
+        });
+
+        var name = new string('A', 200);
+        var request = new
+        {
+            code = "ADSA321A",
+            name = name,
+            colorId = DefaultColorId,
+            comments = "200 characters admin item"
+        };
+        var response = await apiFactory.PutAdminItem(id, request);
+
+        response.Should().Be200Ok();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
+            request.code!,
+            request.name!,
+            request.comments!,
+            DefaultColor));
+    }
+
+    [Fact]
+    public async Task null_comments_are_normalized_to_empty_string()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
+        var id = await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "DSA123",
+            name = "Some item name",
+            colorId = DefaultColorId,
+            comments = "Some comments"
+        });
+
+        var request = new
+        {
+            code = "DSAD123",
+            name = "Some admin X item",
+            colorId = DefaultColorId,
+            comments = (string?)null
+        };
+        var response = await apiFactory.PutAdminItem(id, request);
+
+        response.Should().Be200Ok();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
+            request.code,
+            request.name,
+            "",
             DefaultColor));
     }
 }

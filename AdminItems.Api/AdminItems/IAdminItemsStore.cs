@@ -4,7 +4,7 @@ public interface IAdminItemsStore
 {
     public Task Add(long id, AdminItem adminItem);
 
-    Task Update(long id, AdminItem adminItem);
+    Task Update(AdminItemId id, AdminItem adminItem);
 
     Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
         Func<AdminItemId, AdminItem, TResult> mapper,
@@ -18,7 +18,7 @@ internal sealed class NullAdminItemsStore : IAdminItemsStore
         return Task.CompletedTask;
     }
 
-    public Task Update(long id, AdminItem adminItem)
+    public Task Update(AdminItemId id, AdminItem adminItem)
     {
         return Task.CompletedTask;
     }

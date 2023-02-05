@@ -11,7 +11,7 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
         return Task.CompletedTask;
     }
 
-    public Task Update(long id, AdminItem adminItem)
+    public Task Update(AdminItemId id, AdminItem adminItem)
     {
         if (ContainsKey(AdminItemId.Create(id)))
         {

@@ -23,6 +23,7 @@ public class UpdateAdminItemController : ControllerBase
     [HttpPut("{adminItemId}")]
     public async Task Put([FromRoute]long adminItemId, [FromBody] AdminItemDto dto)
     {
-        await _adminItemsStore.Update(adminItemId, new AdminItem(dto.Code, dto.Name, dto.Comments!, "indigo"));
+        var adminItem = new AdminItem(dto.Code, dto.Name, dto.Comments ?? string.Empty, "indigo");
+        await _adminItemsStore.Update(AdminItemId.Create(adminItemId), adminItem);
     }
 }
