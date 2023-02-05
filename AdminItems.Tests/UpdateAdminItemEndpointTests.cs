@@ -7,8 +7,11 @@ namespace AdminItems.Tests;
 
 public class UpdateAdminItemEndpointTests
 {
-    [Fact]
-    public async Task put_a_valid_admin_item()
+    [Theory]
+    [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
+    [InlineData("YTRA1235", "Another admin Item", "")]
+    [InlineData("1234567890AB", "Another one", "Admin item with max 12 characters")]
+    public async Task put_a_valid_admin_item(string? code, string? name, string? comments)
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
@@ -23,17 +26,17 @@ public class UpdateAdminItemEndpointTests
 
         var response = await apiFactory.PutAdminItem(1, new
         {
-            code = "HGF123",
-            name = "Another name",
+            code = code,
+            name = name,
             colorId = DefaultColorId,
-            comments = "Some other comments"
+            comments = comments
         });
 
         response.Should().Be200Ok();
         adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
-            "HGF123",
-            "Another name",
-            "Some other comments",
+            code!,
+            name!,
+            comments!,
             DefaultColor));
     }
 
