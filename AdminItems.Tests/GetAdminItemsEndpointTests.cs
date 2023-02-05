@@ -6,17 +6,18 @@ namespace AdminItems.Tests;
 
 public class GetAdminItemsEndpointTests
 {
-    [Fact]
-    public async Task response_contains_created_admin_item()
+    [Theory]
+    [InlineData("ADBD123", "Some random admin item name", null)]
+    public async Task response_contains_created_admin_item(string code, string name, string? comments)
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var api = AnAdminItemsApi(adminItemsStore);
         await api.PostAdminItem(new
         {
-            code = "ADBD123",
-            name = "Some random admin item name",
-            colorId = DefaultColorId,
-            comments = (string?)null
+            code,
+            name,
+            DefaultColorId,
+            comments
         });
 
         var response = await api.GetAdminItems();
@@ -28,10 +29,10 @@ public class GetAdminItemsEndpointTests
                 {
                     new
                     {
-                        code = "ADBD123",
-                        name = "Some random admin item name",
+                        code,
+                        name,
                         color = DefaultColor,
-                        comments = string.Empty
+                        comments = comments ?? string.Empty
                     }
                 }
             });
