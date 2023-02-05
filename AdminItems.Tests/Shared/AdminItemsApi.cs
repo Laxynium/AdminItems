@@ -3,6 +3,7 @@ using System.Text.Json;
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
 using AdminItems.Tests.Fakes;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,6 +12,7 @@ namespace AdminItems.Tests.Shared;
 
 public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {
+    private HttpClient? _client;
     private IAdminItemsStore _adminItemsStore = new InMemoryAdminItemsStore();
     private IColorsStore _colorsStore = new InMemoryColorsStore();
     
@@ -36,9 +38,16 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         });
     }
 
+    public async Task<HttpResponseMessage> ThereIsAnAdminItem(object request)
+    {
+        var response = await PostAdminItem(request);
+        response.Should().Be200Ok();
+        return response;
+    }
+
     public async Task<HttpResponseMessage> PostAdminItem(object request)
     {
-        var client = CreateClient();
+        var client = GetClient();
         
         var serialized = JsonSerializer.Serialize(request, new JsonSerializerOptions{IncludeFields = true});
         var content = new StringContent(serialized, Encoding.UTF8, "application/json");
@@ -48,13 +57,15 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
 
     public async Task<HttpResponseMessage> GetAdminItems()
     {
-        var client = CreateClient();
+        var client = GetClient();
         return await client.GetAsync("adminItems");
     }
 
     public async Task<HttpResponseMessage> GetColors()
     {
-        var client = CreateClient();
+        var client = GetClient();
         return await client.GetAsync("colors");
     }
+
+    private HttpClient GetClient() => _client ??= CreateClient();
 }

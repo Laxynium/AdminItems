@@ -9,17 +9,23 @@ public record AdminItemResponse(string Code, string Name, string Color, string? 
 [Route("adminItems")]
 public class GetAdminItemsController : ControllerBase
 {
+    private readonly IAdminItemsStore _adminItemsStore;
+
+    public GetAdminItemsController(IAdminItemsStore adminItemsStore)
+    {
+        _adminItemsStore = adminItemsStore;
+    }
     [HttpGet]
     public async Task<ActionResult<Response>> Get()
     {
-        return Ok(new Response(new List<AdminItemResponse>
-        {
-            new(
-                "ADBD123",
-                "Some random admin item name",
-                "indigo",
-                ""
-            )
-        }));
+        var items = await _adminItemsStore.GetAll(
+            MapToResponse,
+            x => x.Code);
+        return Ok(new Response(items));
+    }
+
+    private static AdminItemResponse MapToResponse(AdminItem x)
+    {
+        return new AdminItemResponse(x.Code, x.Name, x.Color, x.Comments);
     }
 }
