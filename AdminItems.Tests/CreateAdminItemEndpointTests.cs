@@ -23,20 +23,15 @@ public class CreateAdminItemEndpointTests
         response.Should().BeSuccessful();
     }
 
-    [Fact]
-    public async Task valid_admin_item_is_added_to_store()
+    [Theory]
+    [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
+    public async Task valid_admin_item_is_added_to_store(string code, string name, string comments)
     {
         var fakeStore = new FakeAdminItemsStore();
         var apiFactory = new AdminItemsApi();
         apiFactory.UseStore(fakeStore);
 
-        var request = new
-        {
-            code = "GFJS1234",
-            name = "First Admin Item",
-            comments = "This is a first admin item in system"
-        };
-        
+        var request = new { code, name, comments };
         var response = await apiFactory.PostAdminItem(request);;
 
         response.Should().BeSuccessful();
