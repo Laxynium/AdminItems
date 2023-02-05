@@ -34,7 +34,7 @@ public class CreateAdminItemsController : ControllerBase
     {
         var color = await _colorsStore.Find(dto.ColorId);
         if (color is null)
-            return ColorNotFound(dto.ColorId);
+            return ErrorResponses.ColorNotFound(dto.ColorId);
 
         var id = _adminItemIdGenerator.NextId();
         
@@ -49,10 +49,4 @@ public class CreateAdminItemsController : ControllerBase
             id = id.Value
         });
     }
-
-    private BadRequestObjectResult ColorNotFound(long colorId) =>
-        BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
-        {
-            {nameof(colorId), new []{$"Color with id {colorId} was not found"}}
-        }));
 }

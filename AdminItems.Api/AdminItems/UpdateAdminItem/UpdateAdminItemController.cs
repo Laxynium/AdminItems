@@ -29,18 +29,10 @@ public class UpdateAdminItemController : ControllerBase
     {
         var color = await _colorsStore.Find(dto.ColorId);
         if (color is null)
-        {
-            return ColorNotFound(dto.ColorId);
-        }
+            return ErrorResponses.ColorNotFound(dto.ColorId);
+        
         var adminItem = new AdminItem(dto.Code, dto.Name, dto.Comments ?? string.Empty, color!.Name);
         await _adminItemsStore.Update(AdminItemId.Create(adminItemId), adminItem);
         return Ok();
     }
-    
-    private BadRequestObjectResult ColorNotFound(long colorId) =>
-        BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
-        {
-            {nameof(colorId), new []{$"Color with id {colorId} was not found"}}
-        }));
-
 }
