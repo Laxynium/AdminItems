@@ -1,4 +1,6 @@
 ﻿using AdminItems.Api.Colors;
+using AdminItems.Tests.Fakes;
+using AdminItems.Tests.Shared;
 using FluentAssertions;
 
 namespace AdminItems.Tests;

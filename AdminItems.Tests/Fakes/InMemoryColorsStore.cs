@@ -1,6 +1,6 @@
 using AdminItems.Api.Colors;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.Fakes;
 
 public class InMemoryColorsStore : IColorsStore
 {

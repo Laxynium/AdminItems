@@ -2,11 +2,12 @@
 using System.Text.Json;
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
+using AdminItems.Tests.Fakes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.Shared;
 
 public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {

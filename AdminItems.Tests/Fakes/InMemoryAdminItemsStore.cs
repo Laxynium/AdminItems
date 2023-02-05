@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using AdminItems.Api.AdminItems;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.Fakes;
 
 public class InMemoryAdminItemsStore : Collection<AdminItem>, IAdminItemsStore
 {
