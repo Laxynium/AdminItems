@@ -193,6 +193,7 @@ public class CreateAdminItemEndpointTests
         };
         var response = await apiFactory.PostAdminItem(request);
         
-        response.Should().Be400BadRequest();
+        response.Should().Be400BadRequest()
+            .And.HaveError("ColorId", "*not found*");
     }
 }

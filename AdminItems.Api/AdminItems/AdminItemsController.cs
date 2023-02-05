@@ -29,15 +29,20 @@ public class AdminItemsController : ControllerBase
     {
         var color = await _colorsStore.Find(dto.ColorId);
         if (color is null)
-            return BadRequest();
+            return ColorNotFound(dto.ColorId);
 
-        var colorName = color.Name;
         await _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
             dto.Comments ?? string.Empty,
-            colorName));
+            color.Name));
         
         return Ok();
     }
+
+    private BadRequestObjectResult ColorNotFound(long colorId) =>
+        BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+        {
+            {nameof(colorId), new []{$"Color with id {colorId} was not found"}}
+        }));
 }
