@@ -1,4 +1,5 @@
 ﻿using AdminItems.Api.AdminItems;
+using AdminItems.Api.Colors;
 using AdminItems.Tests.Fakes;
 using AdminItems.Tests.Shared;
 using FluentAssertions;
@@ -118,5 +119,35 @@ public class CreateAdminItemEndpointTests
         
         response.Should().Be400BadRequest()
             .And.HaveError("Name","*max*");
+    }
+
+    [Fact]
+    public async Task can_choose_color_from_store()
+    {
+        var colorsStore = new InMemoryColorsStore();
+        colorsStore.AddColors(new []
+        {
+            new Color(2, "midnight")
+        });
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = new AdminItemsApi();
+        apiFactory.UseStore(adminItemsStore);
+        apiFactory.UseStore(colorsStore);
+
+        var request = new
+        {
+            code = "DSAG1235",
+            name = "Y admin item",
+            comments = "Some not important comment",
+            colorId = 2
+        };
+        var response = await apiFactory.PostAdminItem(request);
+        
+        response.Should().Be200Ok();
+        adminItemsStore.Should().Contain(new AdminItem(
+            request.code,
+            request.name,
+            request.comments,
+            "midnight"));
     }
 }

@@ -2,13 +2,13 @@ namespace AdminItems.Api.Colors;
 
 public interface IColorsStore
 {
-    IReadOnlyList<ColorDto> GetAll(Func<Color, ColorDto> mapper);
+    IReadOnlyList<TResult> GetAll<TResult>(Func<Color, TResult> mapper);
 }
 
 internal sealed class NullColorsStore : IColorsStore
 {
-    public IReadOnlyList<ColorDto> GetAll(Func<Color, ColorDto> mapper)
+    public IReadOnlyList<TResult> GetAll<TResult>(Func<Color, TResult> mapper)
     {
-        return new List<ColorDto>();
+        return new List<TResult>();
     }
 }
