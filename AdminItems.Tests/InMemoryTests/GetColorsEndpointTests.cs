@@ -3,7 +3,7 @@ using AdminItems.Tests.Fakes;
 using AdminItems.Tests.Shared;
 using FluentAssertions;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.InMemoryTests;
 
 public class GetColorsEndpointTests
 {

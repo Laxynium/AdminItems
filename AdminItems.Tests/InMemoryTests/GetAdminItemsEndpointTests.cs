@@ -2,7 +2,7 @@
 using FluentAssertions;
 using static AdminItems.Tests.Shared.Fixtures;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.InMemoryTests;
 
 public class GetAdminItemsEndpointTests
 {

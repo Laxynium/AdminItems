@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace AdminItems.Tests;
+namespace AdminItems.Tests.InMemoryTests;
 
 public class HomeEndpointTests
 {
