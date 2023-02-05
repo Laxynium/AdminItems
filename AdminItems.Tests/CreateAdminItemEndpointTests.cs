@@ -7,6 +7,7 @@ namespace AdminItems.Tests;
 
 public class CreateAdminItemEndpointTests
 {
+    private const string DefaultColor = "indigo";
     [Theory]
     [InlineData("GFJS1234", "First Admin Item", "This is a first admin item in system")]
     [InlineData("YTRA1235", "Another admin Item", "")]
@@ -24,7 +25,8 @@ public class CreateAdminItemEndpointTests
         adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
-            request.comments!));
+            request.comments!,
+            DefaultColor));
     }
     
     [Fact]
@@ -42,7 +44,8 @@ public class CreateAdminItemEndpointTests
         adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
-            request.comments!));
+            request.comments!,
+            DefaultColor));
     }
     
     [Fact]
@@ -64,7 +67,8 @@ public class CreateAdminItemEndpointTests
         adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
-            ""));
+            "",
+            DefaultColor));
     }
     
     [Theory]

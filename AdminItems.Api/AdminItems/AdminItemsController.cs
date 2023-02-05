@@ -23,7 +23,8 @@ public class AdminItemsController : ControllerBase
         _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
-            dto.Comments ?? string.Empty));
+            dto.Comments ?? string.Empty,
+            "indigo"));
         return Task.CompletedTask;
     }
 }
