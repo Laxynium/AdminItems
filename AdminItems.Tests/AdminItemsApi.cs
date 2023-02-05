@@ -9,7 +9,7 @@ namespace AdminItems.Tests;
 
 public class AdminItemsApi : WebApplicationFactory<Program>
 {
-    private FakeAdminItemsStore _fakeAdminItemsStore;
+    private FakeAdminItemsStore _fakeAdminItemsStore = new();
 
     public void UseStore(FakeAdminItemsStore fakeAdminItemsStore)
     {
