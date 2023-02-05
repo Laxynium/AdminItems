@@ -1,4 +1,5 @@
 ﻿using AdminItems.Api.AdminItems;
+using AdminItems.Api.Colors;
 using AdminItems.Tests.Fakes;
 using FluentAssertions;
 using static AdminItems.Tests.Shared.Fixtures;
@@ -206,15 +207,75 @@ public class UpdateAdminItemEndpointTests
         apiFactory.WillGenerateAdminItemId(1);
 
         var name = new string('X', 200);
-        var response = await apiFactory.PutAdminItem(1, new
+        var request = new
         {
             code = "ASDBD123",
             name = name + "Y",
             colorId = DefaultColorId,
             comments = "NotRelevant"
-        });
+        };
+        var response = await apiFactory.PutAdminItem(1, request);
 
         response.Should().Be400BadRequest()
             .And.HaveError("Name", "*max*");
+    }
+
+    [Fact]
+    public async Task color_is_updated()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApiWith(adminItemsStore,
+            new Color(1, "puce"),
+            new Color(2, "rust"),
+            new Color(3, "ruby"));
+        apiFactory.WillGenerateAdminItemId(1);
+        var id = await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "GAD1235",
+            name = "Some X item name",
+            colorId = 1,
+            comments = "Some X item comments"
+        });
+
+        var response = await apiFactory.PutAdminItem(id, new
+        {
+            code = "GAD1235",
+            name = "Some X item name",
+            colorId = 3,
+            comments = "Some X item comments"
+        });
+        response.Should().Be200Ok();
+
+        adminItemsStore.Should().Contain(id, new AdminItem(
+            "GAD1235", "Some X item name", "Some X item comments", "ruby"));
+    }
+    
+    [Fact]
+    public async Task invalid_request_when_color_is_not_in_store()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApiWith(adminItemsStore,
+            new Color(1, "puce"),
+            new Color(2, "rust"),
+            new Color(3, "ruby"));
+        apiFactory.WillGenerateAdminItemId(1);
+        var id = await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "GAD1235",
+            name = "Some X item name",
+            colorId = 1,
+            comments = "Some X item comments"
+        });
+
+        var response = await apiFactory.PutAdminItem(id, new
+        {
+            code = "GAD1235",
+            name = "Some X item name",
+            colorId = 133,
+            comments = "Some X item comments"
+        });
+
+        response.Should().Be400BadRequest()
+            .And.HaveError("ColorId", "*not found*");
     }
 }
