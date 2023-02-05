@@ -20,6 +20,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapGet("", ctx => Task.FromResult("Hello World"));
 
 app.Run();
+
+internal partial class Program{}

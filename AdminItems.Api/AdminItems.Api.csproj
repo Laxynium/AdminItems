@@ -18,5 +18,9 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="AdminItems.Tests"/>
+    </ItemGroup>
 
 </Project>
