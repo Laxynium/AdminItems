@@ -24,6 +24,28 @@ public class CreateAdminItemEndpointTests
             request.comments!));
     }
 
+    [Fact]
+    public async Task null_comments_are_normalized_to_empty_string()
+    {
+        var fakeStore = new FakeAdminItemsStore();
+        var apiFactory = new AdminItemsApi();
+        apiFactory.UseStore(fakeStore);
+        
+        var request = new
+        {
+            code = "DSAD123", 
+            name = "Some admin X item", 
+            comments = (string)null!
+        };
+        var response = await apiFactory.PostAdminItem(request);
+        
+        response.Should().Be200Ok();
+        fakeStore.Should().Contain(new AdminItem(
+            request.code!,
+            request.name!,
+            ""));
+    }
+    
     [Theory]
     [InlineData(null, "Second admin item", "This is second admin item", "Code")]
     [InlineData("", "Second admin item", "This is second admin item", "Code")]

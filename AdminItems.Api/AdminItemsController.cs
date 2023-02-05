@@ -22,7 +22,7 @@ public class AdminItemsController : ControllerBase
         _adminItemsStore.Add(new AdminItem(
             dto.Code,
             dto.Name,
-            dto.Comments!));
+            dto.Comments ?? string.Empty));
         return Task.CompletedTask;
     }
 }
