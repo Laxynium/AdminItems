@@ -40,7 +40,7 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     {
         var client = CreateClient();
         
-        var serialized = JsonSerializer.Serialize(request);
+        var serialized = JsonSerializer.Serialize(request, new JsonSerializerOptions{IncludeFields = true});
         var content = new StringContent(serialized, Encoding.UTF8, "application/json");
         
         return await client.PostAsync("adminItems", content);
