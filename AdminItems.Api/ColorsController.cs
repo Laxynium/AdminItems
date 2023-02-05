@@ -2,24 +2,25 @@
 
 namespace AdminItems.Api;
 
-public record Response(List<ColorDto> Items);
+public record Response(IReadOnlyList<ColorDto> Items);
 public record ColorDto(long Id, string Name);
 
 [ApiController]
 [Route("[controller]")]
 public class ColorsController : ControllerBase
 {
+    private readonly IColorsStore _colorsStore;
+
+    public ColorsController(IColorsStore colorsStore)
+    {
+        _colorsStore = colorsStore;
+    }
 
     [HttpGet]
     public Task<Response> Get()
     {
-        var response = new Response(new List<ColorDto>
-        {
-            new(1, "alizarin"),
-            new(2, "amethyst"),
-            new(3, "beige"),
-            new(4, "cherry"),
-        });
+        var colors = _colorsStore.GetAll(x => new ColorDto(x.Id, x.Name));
+        var response = new Response(colors);
         return Task.FromResult(response);
     }
 }

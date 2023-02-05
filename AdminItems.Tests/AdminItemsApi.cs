@@ -10,18 +10,27 @@ namespace AdminItems.Tests;
 public class AdminItemsApi : WebApplicationFactory<Program>
 {
     private FakeAdminItemsStore _fakeAdminItemsStore = new();
+    private FakeColorsStore _fakeColorsStore = new();
 
     public void UseStore(FakeAdminItemsStore fakeAdminItemsStore)
     {
         _fakeAdminItemsStore = fakeAdminItemsStore;
     }
 
+    public void UseStore(FakeColorsStore fakeColorsStore)
+    {
+        _fakeColorsStore = fakeColorsStore;
+    }
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IAdminItemsStore>();
             services.TryAddSingleton<IAdminItemsStore>(_fakeAdminItemsStore);
+
+            services.RemoveAll<IColorsStore>();
+            services.TryAddSingleton<IColorsStore>(_fakeColorsStore);
         });
     }
 
