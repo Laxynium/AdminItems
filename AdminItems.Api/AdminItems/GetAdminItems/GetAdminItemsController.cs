@@ -3,7 +3,7 @@
 namespace AdminItems.Api.AdminItems.GetAdminItems;
 
 public record Response(IReadOnlyList<AdminItemResponse> Items);
-public record AdminItemResponse(string Code, string Name, string Color, string? Comments);
+public record AdminItemResponse(long Id, string Code, string Name, string Color, string? Comments);
     
 [ApiController]
 [Route("adminItems")]
@@ -24,8 +24,6 @@ public class GetAdminItemsController : ControllerBase
         return Ok(new Response(items));
     }
 
-    private static AdminItemResponse MapToResponse(AdminItem x)
-    {
-        return new AdminItemResponse(x.Code, x.Name, x.Color, x.Comments);
-    }
+    private static AdminItemResponse MapToResponse(AdminItemId id, AdminItem x) =>
+        new(id, x.Code, x.Name, x.Color, x.Comments);
 }

@@ -1,25 +1,30 @@
-using System.Collections.ObjectModel;
 using AdminItems.Api.AdminItems;
 
 namespace AdminItems.Tests.Fakes;
 
-public class InMemoryAdminItemsStore : Collection<AdminItem>, IAdminItemsStore
+public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdminItemsStore
 {
-    public Task Add(AdminItem adminItem)
+    public Task Add(long id, AdminItem adminItem)
     {
-        base.Add(adminItem);
-        
+        base.Add(AdminItemId.Create(id), adminItem);
+
         return Task.CompletedTask;
     }
 
     public Task Update(long id, AdminItem adminItem)
     {
-        base.SetItem((int)(id-1L), adminItem);
+        if (ContainsKey(AdminItemId.Create(id)))
+        {
+            base[AdminItemId.Create(id)] = adminItem;
+        }
         return Task.CompletedTask;
     }
 
     public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
-        Func<AdminItem, TResult> mapper,
+        Func<AdminItemId, AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer) => 
-        Task.FromResult(Items.OrderBy(orderer).Select(mapper).ToList() as IReadOnlyList<TResult>);
+        Task.FromResult(Keys.Select(x => new { key = x, value = base[x] })
+            .OrderBy(x => orderer(x.value))
+            .Select(x => mapper(x.key, x.value))
+            .ToList() as IReadOnlyList<TResult>);
 }

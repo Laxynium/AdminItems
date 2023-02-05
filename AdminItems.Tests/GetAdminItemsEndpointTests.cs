@@ -13,7 +13,8 @@ public class GetAdminItemsEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var api = AnAdminItemsApi(adminItemsStore);
-        await api.ThereIsAnAdminItem(new
+        api.WillGenerateAdminItemId(1);
+        var id = await api.ThereIsAnAdminItem(new
         {
             code,
             name,
@@ -30,6 +31,7 @@ public class GetAdminItemsEndpointTests
                 {
                     new
                     {
+                        id = id.Value,
                         code,
                         name,
                         color = DefaultColor,
@@ -44,21 +46,22 @@ public class GetAdminItemsEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var api = AnAdminItemsApi(adminItemsStore);
-        await api.ThereIsAnAdminItem(new
+        api.WillGenerateAdminItemId(1, 2, 3);
+        var id1 = await api.ThereIsAnAdminItem(new
         {
             code = "BBB13",
             name = "Admin Item1",
             colorId = DefaultColorId,
             comments = "Some comment 1"
         });
-        await api.ThereIsAnAdminItem(new
+        var id2 = await api.ThereIsAnAdminItem(new
         {
             code = "BBB12",
             name = "Admin Item2",
             colorId = DefaultColorId,
             comments = "Some comment 2"
         });
-        await api.ThereIsAnAdminItem(new
+        var id3 = await api.ThereIsAnAdminItem(new
         {
             code = "AAA11",
             name = "Admin Item3",
@@ -75,6 +78,7 @@ public class GetAdminItemsEndpointTests
                 {
                     new
                     {
+                        id = id3.Value,
                         code = "AAA11",
                         name = "Admin Item3",
                         color = DefaultColor,
@@ -82,6 +86,7 @@ public class GetAdminItemsEndpointTests
                     },
                     new
                     {
+                        id = id2.Value,
                         code = "BBB12",
                         name = "Admin Item2",
                         color = DefaultColor,
@@ -89,6 +94,7 @@ public class GetAdminItemsEndpointTests
                     },
                     new
                     {
+                        id = id1.Value,
                         code = "BBB13",
                         name = "Admin Item1",
                         color = DefaultColor,

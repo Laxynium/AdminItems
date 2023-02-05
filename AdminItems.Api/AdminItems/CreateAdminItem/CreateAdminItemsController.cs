@@ -17,11 +17,16 @@ public class CreateAdminItemsController : ControllerBase
 {
     private readonly IAdminItemsStore _adminItemsStore;
     private readonly IColorsStore _colorsStore;
+    private readonly IAdminItemIdGenerator _adminItemIdGenerator;
 
-    public CreateAdminItemsController(IAdminItemsStore adminItemsStore, IColorsStore colorsStore)
+    public CreateAdminItemsController(
+        IAdminItemsStore adminItemsStore, 
+        IColorsStore colorsStore, 
+        IAdminItemIdGenerator adminItemIdGenerator)
     {
         _adminItemsStore = adminItemsStore;
         _colorsStore = colorsStore;
+        _adminItemIdGenerator = adminItemIdGenerator;
     }
 
     [HttpPost]
@@ -31,13 +36,18 @@ public class CreateAdminItemsController : ControllerBase
         if (color is null)
             return ColorNotFound(dto.ColorId);
 
-        await _adminItemsStore.Add(new AdminItem(
+        var id = _adminItemIdGenerator.NextId();
+        
+        await _adminItemsStore.Add(id, new AdminItem(
             dto.Code,
             dto.Name,
             dto.Comments ?? string.Empty,
             color.Name));
         
-        return Ok();
+        return Created(string.Empty, new
+        {
+            id = id.Value
+        });
     }
 
     private BadRequestObjectResult ColorNotFound(long colorId) =>

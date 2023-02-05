@@ -16,12 +16,13 @@ public class CreateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var request = ARequest(code, name, comments);
         var response = await apiFactory.PostAdminItem(request);
 
-        response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        response.Should().Be201Created();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
             request.Code!,
             request.Name!,
             request.Comments!,
@@ -29,10 +30,28 @@ public class CreateAdminItemEndpointTests
     }
 
     [Fact]
+    public async Task valid_admin_item_gets_assigned_id()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(5);
+        
+        var request = ARequest("ABBAA123", "Some admin item name2", "Not so long comment");
+        var response = await apiFactory.PostAdminItem(request);
+
+        response.Should().Be201Created()
+            .And.BeAs(new
+            {
+                id = 5
+            });
+    }
+    
+    [Fact]
     public async Task admin_item_with_200_chars_in_name_is_added_to_store()
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var name = new string('A', 200);
         var request = ARequest(
@@ -42,8 +61,8 @@ public class CreateAdminItemEndpointTests
         );
         var response = await apiFactory.PostAdminItem(request);
 
-        response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        response.Should().Be201Created();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
             request.Code!,
             request.Name!,
             request.Comments!,
@@ -55,6 +74,7 @@ public class CreateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var request = ARequest(
             "DSAD123",
@@ -63,8 +83,8 @@ public class CreateAdminItemEndpointTests
         );
         var response = await apiFactory.PostAdminItem(request);
 
-        response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        response.Should().Be201Created();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
             request.Code!,
             request.Name!,
             "",
@@ -80,6 +100,7 @@ public class CreateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var request = ARequest(code, name, comments);
         var response = await apiFactory.PostAdminItem(request);
@@ -95,6 +116,7 @@ public class CreateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var request = ARequest(code, "NotRelevant", "NotRelevant");
         var response = await apiFactory.PostAdminItem(request);
@@ -108,6 +130,7 @@ public class CreateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
 
         var name = new string('X', 200);
         var request = ARequest("ASDBD123", name + 'Y', "NotRelevant");
@@ -123,6 +146,7 @@ public class CreateAdminItemEndpointTests
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApiWith(adminItemsStore,
             new Color(2, "midnight"));
+        apiFactory.WillGenerateAdminItemId(1);
         
         var request = ARequestWithColor(
             "DSAG1235",
@@ -132,8 +156,8 @@ public class CreateAdminItemEndpointTests
         );
         var response = await apiFactory.PostAdminItem(request);
 
-        response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        response.Should().Be201Created();
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
             request.Code!,
             request.Name!,
             request.Comments!,
@@ -147,6 +171,7 @@ public class CreateAdminItemEndpointTests
         var apiFactory = AnAdminItemsApiWith(adminItemsStore,
             new Color(1,"indigo"),
             new Color(7,"papaya"));
+        apiFactory.WillGenerateAdminItemId(1);
 
         var request = ARequestWithColor(
             "DSAG1235",

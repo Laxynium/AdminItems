@@ -12,6 +12,7 @@ public class UpdateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1);
         await apiFactory.ThereIsAnAdminItem(new
         {
             code = "ABCA123",
@@ -29,7 +30,7 @@ public class UpdateAdminItemEndpointTests
         });
 
         response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
             "HGF123",
             "Another name",
             "Some other comments",
@@ -41,6 +42,7 @@ public class UpdateAdminItemEndpointTests
     {
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
+        apiFactory.WillGenerateAdminItemId(1, 2, 3);
         await apiFactory.ThereIsAnAdminItem(new
         {
             code = "ABCA123",
@@ -72,12 +74,12 @@ public class UpdateAdminItemEndpointTests
         });
 
         response.Should().Be200Ok();
-        adminItemsStore.Should().Contain(new AdminItem(
+        adminItemsStore.Should().Contain(AdminItemId.Create(2), new AdminItem(
             "UUA123",
             "Updated name",
             "Some update comment",
             DefaultColor));
-        adminItemsStore.Should().NotContain(new AdminItem(
+        adminItemsStore.Should().NotContain(AdminItemId.Create(2), new AdminItem(
             "GFDS123",
             "Second admin item",
             "Another comment",

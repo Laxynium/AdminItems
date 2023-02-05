@@ -2,18 +2,18 @@ namespace AdminItems.Api.AdminItems;
 
 public interface IAdminItemsStore
 {
-    public Task Add(AdminItem adminItem);
+    public Task Add(long id, AdminItem adminItem);
 
     Task Update(long id, AdminItem adminItem);
 
     Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
-        Func<AdminItem, TResult> mapper,
+        Func<AdminItemId, AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer);
 }
 
 internal sealed class NullAdminItemsStore : IAdminItemsStore
 {
-    public Task Add(AdminItem adminItem)
+    public Task Add(long id, AdminItem adminItem)
     {
         return Task.CompletedTask;
     }
@@ -23,7 +23,7 @@ internal sealed class NullAdminItemsStore : IAdminItemsStore
         return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItem, TResult> mapper,
+    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
         Func<AdminItem, TProperty> orderer) => 
         Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
 }

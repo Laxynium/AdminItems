@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
 using AdminItems.Tests.Fakes;
@@ -15,6 +17,7 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     private HttpClient? _client;
     private IAdminItemsStore _adminItemsStore = new InMemoryAdminItemsStore();
     private IColorsStore _colorsStore = new InMemoryColorsStore();
+    private readonly FakeAdminItemIdGenerator _adminItemIdGenerator = new();
     
     public void UseStore(IAdminItemsStore inMemoryAdminItemsStore)
     {
@@ -35,14 +38,27 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
 
             services.RemoveAll<IColorsStore>();
             services.TryAddSingleton(_colorsStore);
+
+            services.RemoveAll<IAdminItemIdGenerator>();
+            services.TryAddSingleton<IAdminItemIdGenerator>(_adminItemIdGenerator);
         });
     }
 
-    public async Task<HttpResponseMessage> ThereIsAnAdminItem(object request)
+    public AdminItemsApi WillGenerateAdminItemId(params long[] ids)
+    {
+        foreach (var id in ids)
+        {
+            _adminItemIdGenerator.WillGenerate(id);    
+        }
+        return this;
+    }
+    
+    public async Task<AdminItemId> ThereIsAnAdminItem(object request)
     {
         var response = await PostAdminItem(request);
-        response.Should().Be200Ok();
-        return response;
+        response.Should().Be201Created();
+        var body = await response.Content.ReadFromJsonAsync<JsonNode>();
+        return AdminItemId.Create(body!["id"]!.GetValue<long>());
     }
 
     public async Task<HttpResponseMessage> PostAdminItem(object request)
