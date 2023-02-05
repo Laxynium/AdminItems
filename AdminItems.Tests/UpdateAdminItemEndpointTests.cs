@@ -17,21 +17,17 @@ public class UpdateAdminItemEndpointTests
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1);
-        await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "ABCA123",
-            name = "Some item name",
-            colorId = DefaultColorId,
-            comments = "Some comments"
-        });
+        await apiFactory.ThereIsAnAdminItem(ARequest(
+            "ABCA123",
+            "Some item name",
+            "Some comments"
+        ));
 
-        var response = await apiFactory.PutAdminItem(1, new
-        {
-            code = code,
-            name = name,
-            colorId = DefaultColorId,
-            comments = comments
-        });
+        var response = await apiFactory.PutAdminItem(1, ARequest(
+            code,
+            name,
+            comments
+        ));
 
         response.Should().Be200Ok();
         adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
@@ -47,35 +43,27 @@ public class UpdateAdminItemEndpointTests
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1, 2, 3);
-        await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "ABCA123",
-            name = "Some item name",
-            colorId = DefaultColorId,
-            comments = "Some comments"
-        });
-        await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "GFDS123",
-            name = "Second admin item",
-            colorId = DefaultColorId,
-            comments = "Another comment"
-        });
-        await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "HGFF312",
-            name = "Thrid one",
-            colorId = DefaultColorId,
-            comments = "Yet another comment"
-        });
+        await apiFactory.ThereIsAnAdminItem(ARequest(
+            "ABCA123",
+            "Some item name",
+            "Some comments"
+        ));
+        await apiFactory.ThereIsAnAdminItem(ARequest(
+            "GFDS123",
+            "Second admin item",
+            "Another comment"
+        ));
+        await apiFactory.ThereIsAnAdminItem(ARequest(
+            "HGFF312",
+            "Thrid one",
+            "Yet another comment"
+        ));
         
-        var response = await apiFactory.PutAdminItem(2, new
-        {
-            code = "UUA123",
-            name = "Updated name",
-            colorId = DefaultColorId,
-            comments = "Some update comment"
-        });
+        var response = await apiFactory.PutAdminItem(2, ARequest(
+            "UUA123",
+            "Updated name",
+            "Some update comment"
+        ));
 
         response.Should().Be200Ok();
         adminItemsStore.Should().Contain(AdminItemId.Create(2), new AdminItem(
@@ -96,29 +84,25 @@ public class UpdateAdminItemEndpointTests
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1);
-        var id = await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "DSA123",
-            name = "Some item name",
-            colorId = DefaultColorId,
-            comments = "Some comments"
-        });
+        var id = await apiFactory.ThereIsAnAdminItem(ARequest(
+            "DSA123",
+            "Some item name",
+            "Some comments"
+        ));
 
         var name = new string('A', 200);
-        var request = new
-        {
-            code = "ADSA321A",
-            name = name,
-            colorId = DefaultColorId,
-            comments = "200 characters admin item"
-        };
+        var request = ARequest(
+            "ADSA321A",
+            name,
+            "200 characters admin item"
+        );
         var response = await apiFactory.PutAdminItem(id, request);
 
         response.Should().Be200Ok();
         adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
-            request.code!,
-            request.name!,
-            request.comments!,
+            request.Code!,
+            request.Name!,
+            request.Comments!,
             DefaultColor));
     }
 
@@ -128,27 +112,23 @@ public class UpdateAdminItemEndpointTests
         var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1);
-        var id = await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "DSA123",
-            name = "Some item name",
-            colorId = DefaultColorId,
-            comments = "Some comments"
-        });
+        var id = await apiFactory.ThereIsAnAdminItem(ARequest(
+            "DSA123",
+            "Some item name",
+            "Some comments"
+        ));
 
-        var request = new
-        {
-            code = "DSAD123",
-            name = "Some admin X item",
-            colorId = DefaultColorId,
-            comments = (string?)null
-        };
+        var request = ARequest(
+            "DSAD123",
+            "Some admin X item",
+            null
+        );
         var response = await apiFactory.PutAdminItem(id, request);
 
         response.Should().Be200Ok();
         adminItemsStore.Should().Contain(AdminItemId.Create(1), new AdminItem(
-            request.code,
-            request.name,
+            request.Code!,
+            request.Name!,
             "",
             DefaultColor));
     }
@@ -164,13 +144,11 @@ public class UpdateAdminItemEndpointTests
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1);
 
-        var request = new
-        {
-            code = code,
-            name = name,
-            colorId = DefaultColorId,
-            comments = comments
-        };
+        var request = ARequest(
+            code,
+            name,
+            comments
+        );
         var response = await apiFactory.PutAdminItem(1, request);
 
         response.Should().Be400BadRequest()
@@ -186,13 +164,11 @@ public class UpdateAdminItemEndpointTests
         var apiFactory = AnAdminItemsApi(adminItemsStore);
         apiFactory.WillGenerateAdminItemId(1);
 
-        var request = new
-        {
-            code = code,
-            name = "NotRelevant",
-            colorId = DefaultColorId,
-            comments = "NotRelevant"
-        };
+        var request = ARequest(
+            code,
+            "NotRelevant",
+            "NotRelevant"
+        );
         var response = await apiFactory.PutAdminItem(1, request);
 
         response.Should().Be400BadRequest()
@@ -207,13 +183,11 @@ public class UpdateAdminItemEndpointTests
         apiFactory.WillGenerateAdminItemId(1);
 
         var name = new string('X', 200);
-        var request = new
-        {
-            code = "ASDBD123",
-            name = name + "Y",
-            colorId = DefaultColorId,
-            comments = "NotRelevant"
-        };
+        var request = ARequest(
+            "ASDBD123",
+            name + "Y",
+            "NotRelevant"
+        );
         var response = await apiFactory.PutAdminItem(1, request);
 
         response.Should().Be400BadRequest()
@@ -229,21 +203,19 @@ public class UpdateAdminItemEndpointTests
             new Color(2, "rust"),
             new Color(3, "ruby"));
         apiFactory.WillGenerateAdminItemId(1);
-        var id = await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "GAD1235",
-            name = "Some X item name",
-            colorId = 1,
-            comments = "Some X item comments"
-        });
+        var id = await apiFactory.ThereIsAnAdminItem(ARequestWithColor(
+            "GAD1235",
+            "Some X item name",
+            "Some X item comments",
+            1
+        ));
 
-        var response = await apiFactory.PutAdminItem(id, new
-        {
-            code = "GAD1235",
-            name = "Some X item name",
-            colorId = 3,
-            comments = "Some X item comments"
-        });
+        var response = await apiFactory.PutAdminItem(id, ARequestWithColor(
+            "GAD1235",
+            "Some X item name",
+            "Some X item comments",
+            3
+        ));
         response.Should().Be200Ok();
 
         adminItemsStore.Should().Contain(id, new AdminItem(
@@ -259,23 +231,30 @@ public class UpdateAdminItemEndpointTests
             new Color(2, "rust"),
             new Color(3, "ruby"));
         apiFactory.WillGenerateAdminItemId(1);
-        var id = await apiFactory.ThereIsAnAdminItem(new
-        {
-            code = "GAD1235",
-            name = "Some X item name",
-            colorId = 1,
-            comments = "Some X item comments"
-        });
+        var id = await apiFactory.ThereIsAnAdminItem(ARequestWithColor(
+            "GAD1235",
+            "Some X item name",
+            "Some X item comments",
+            1
+        ));
 
-        var response = await apiFactory.PutAdminItem(id, new
-        {
-            code = "GAD1235",
-            name = "Some X item name",
-            colorId = 133,
-            comments = "Some X item comments"
-        });
+        var response = await apiFactory.PutAdminItem(id, ARequestWithColor(
+            "GAD1235",
+            "Some X item name",
+            "Some X item comments",
+            133
+        ));
 
         response.Should().Be400BadRequest()
             .And.HaveError("ColorId", "*not found*");
     }
+    
+    private static Request ARequest(
+        string? code, string? name, string? comments) =>
+        new (code, name, comments, DefaultColorId);
+    private static Request ARequestWithColor(
+        string? code, string? name, string? comments, long colorId) =>
+        new (code, name, comments, colorId);
+    
+    private record Request(string? Code, string? Name, string? Comments, long ColorId);
 }
