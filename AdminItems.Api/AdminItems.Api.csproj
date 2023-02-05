@@ -10,18 +10,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CSharpFunctionalExtensions" Version="2.37.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="2.37.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <InternalsVisibleTo Include="AdminItems.Tests" />
+        <InternalsVisibleTo Include="AdminItems.Tests"/>
     </ItemGroup>
 
 </Project>

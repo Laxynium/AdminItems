@@ -4,16 +4,16 @@ namespace AdminItems.Api.AdminItems;
 
 public class AdminItem : ValueObject
 {
-    public string Code { get; }
-    public string Name { get; }
-    public string Comments { get; }
-
     public AdminItem(string code, string name, string comments)
     {
         Code = code;
         Name = name;
         Comments = comments;
     }
+
+    public string Code { get; }
+    public string Name { get; }
+    public string Comments { get; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

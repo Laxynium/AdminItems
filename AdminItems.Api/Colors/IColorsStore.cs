@@ -7,5 +7,8 @@ public interface IColorsStore
 
 internal sealed class NullColorsStore : IColorsStore
 {
-    public IReadOnlyList<ColorDto> GetAll(Func<Color, ColorDto> mapper) => new List<ColorDto>();
+    public IReadOnlyList<ColorDto> GetAll(Func<Color, ColorDto> mapper)
+    {
+        return new List<ColorDto>();
+    }
 }

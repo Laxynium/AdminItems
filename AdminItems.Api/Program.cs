@@ -26,5 +26,7 @@ app.Run();
 
 namespace AdminItems.Api
 {
-    public partial class Program{}
+    public class Program
+    {
+    }
 }

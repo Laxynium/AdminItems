@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdminItems.Api.AdminItems;
 
-public record AdminItemDto([Required][StringLength(12)]string Code, [Required][StringLength(200)]string Name, string? Comments);
+public record AdminItemDto([Required] [StringLength(12)] string Code, [Required] [StringLength(200)] string Name,
+    string? Comments);
 
 [ApiController]
 [Route("[controller]")]
@@ -15,7 +16,7 @@ public class AdminItemsController : ControllerBase
     {
         _adminItemsStore = adminItemsStore;
     }
-    
+
     [HttpPost]
     public Task Post([FromBody] AdminItemDto dto)
     {
