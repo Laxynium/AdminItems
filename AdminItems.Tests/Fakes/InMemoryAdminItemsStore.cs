@@ -14,7 +14,7 @@ public class InMemoryAdminItemsStore : Collection<AdminItem>, IAdminItemsStore
 
     public Task Update(long id, AdminItem adminItem)
     {
-        base.SetItem(0, adminItem);
+        base.SetItem((int)(id-1L), adminItem);
         return Task.CompletedTask;
     }
 

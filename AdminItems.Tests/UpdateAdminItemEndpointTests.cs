@@ -35,4 +35,52 @@ public class UpdateAdminItemEndpointTests
             "Some other comments",
             DefaultColor));
     }
+
+    [Fact]
+    public async Task put_a_valid_admin_item_when_there_are_many_admin_items()
+    {
+        var adminItemsStore = new InMemoryAdminItemsStore();
+        var apiFactory = AnAdminItemsApi(adminItemsStore);
+        await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "ABCA123",
+            name = "Some item name",
+            colorId = DefaultColorId,
+            comments = "Some comments"
+        });
+        await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "GFDS123",
+            name = "Second admin item",
+            colorId = DefaultColorId,
+            comments = "Another comment"
+        });
+        await apiFactory.ThereIsAnAdminItem(new
+        {
+            code = "HGFF312",
+            name = "Thrid one",
+            colorId = DefaultColorId,
+            comments = "Yet another comment"
+        });
+        
+        var response = await apiFactory.PutAdminItem(2, new
+        {
+            code = "UUA123",
+            name = "Updated name",
+            colorId = DefaultColorId,
+            comments = "Some update comment"
+        });
+
+        response.Should().Be200Ok();
+        adminItemsStore.Should().Contain(new AdminItem(
+            "UUA123",
+            "Updated name",
+            "Some update comment",
+            DefaultColor));
+        adminItemsStore.Should().NotContain(new AdminItem(
+            "GFDS123",
+            "Second admin item",
+            "Another comment",
+            DefaultColor));
+    }
 }
