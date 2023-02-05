@@ -11,6 +11,8 @@ public class InMemoryColorsStore : IColorsStore
         _colors = colors;
     }
 
+    public Task<Color?> Find(long colorId) => Task.FromResult(_colors.FirstOrDefault(x=>x.Id == colorId));
+
     public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper) =>
         Task.FromResult(_colors
             .Select(mapper)

@@ -2,13 +2,14 @@ namespace AdminItems.Api.Colors;
 
 public interface IColorsStore
 {
+    Task<Color?> Find(long colorId);
     Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper);
 }
 
 internal sealed class NullColorsStore : IColorsStore
 {
-    public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper)
-    {
-        return Task.FromResult<IReadOnlyList<TResult>>(new List<TResult>());
-    }
+    public Task<Color?> Find(long colorId) => null!;
+
+    public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper) => 
+        Task.FromResult<IReadOnlyList<TResult>>(new List<TResult>());
 }

@@ -27,12 +27,9 @@ public class AdminItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] AdminItemDto dto)
     {
-        var colors = await _colorsStore.GetAll(x => x);
-        var color = colors.FirstOrDefault(x => x.Id == dto.ColorId);
+        var color = await _colorsStore.Find(dto.ColorId);
         if (color is null)
-        {
             return BadRequest();
-        }
 
         var colorName = color.Name;
         await _adminItemsStore.Add(new AdminItem(
