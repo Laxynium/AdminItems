@@ -2,7 +2,7 @@
 using AdminItems.Api.Colors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminItems.Api.AdminItems;
+namespace AdminItems.Api.AdminItems.CreateAdminItem;
 
 public record AdminItemDto(
     [Required] [StringLength(12)] string Code,
@@ -12,13 +12,13 @@ public record AdminItemDto(
 );
 
 [ApiController]
-[Route("[controller]")]
-public class AdminItemsController : ControllerBase
+[Route("adminItems")]
+public class CreateAdminItemsController : ControllerBase
 {
     private readonly IAdminItemsStore _adminItemsStore;
     private readonly IColorsStore _colorsStore;
 
-    public AdminItemsController(IAdminItemsStore adminItemsStore, IColorsStore colorsStore)
+    public CreateAdminItemsController(IAdminItemsStore adminItemsStore, IColorsStore colorsStore)
     {
         _adminItemsStore = adminItemsStore;
         _colorsStore = colorsStore;

@@ -46,6 +46,12 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         return await client.PostAsync("adminItems", content);
     }
 
+    public async Task<HttpResponseMessage> GetAdminItems()
+    {
+        var client = CreateClient();
+        return await client.GetAsync("adminItems");
+    }
+
     public async Task<HttpResponseMessage> GetColors()
     {
         var client = CreateClient();
