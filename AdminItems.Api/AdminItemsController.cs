@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdminItems.Api;
 
-public record AdminItemDto([Required]string Code, [Required]string Name, string? Comments);
+public record AdminItemDto([Required][StringLength(12)]string Code, [Required][StringLength(200)]string Name, string? Comments);
 
 [ApiController]
 [Route("[controller]")]
