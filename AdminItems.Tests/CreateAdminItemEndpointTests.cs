@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using AdminItems.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -20,6 +21,29 @@ public class CreateAdminItemEndpointTests
         var response = await PostAdminItem(request);
 
         response.Should().BeSuccessful();
+    }
+
+    [Fact]
+    public async Task valid_admin_item_is_added_to_store()
+    {
+        var fakeStore = new FakeAdminItemsStore();
+        var apiFactory = new AdminItemsApi();
+        apiFactory.UseStore(fakeStore);
+
+        var request = new
+        {
+            code = "GFJS1234",
+            name = "First Admin Item",
+            comments = "This is a first admin item in system"
+        };
+        
+        var response = await apiFactory.PostAdminItem(request);;
+
+        response.Should().BeSuccessful();
+        fakeStore.Should().Contain(new AdminItem(
+            request.code,
+            request.name,
+            request.comments));
     }
 
     private async Task<HttpResponseMessage> PostAdminItem(object request)

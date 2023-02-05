@@ -1,4 +1,8 @@
+using AdminItems.Api;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IAdminItemsStore, NullAdminItemsStore>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -22,4 +26,4 @@ app.MapControllers();
 
 app.Run();
 
-internal partial class Program{}
+public partial class Program{}
