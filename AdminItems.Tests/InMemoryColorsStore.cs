@@ -1,9 +1,8 @@
-using AdminItems.Api;
 using AdminItems.Api.Colors;
 
 namespace AdminItems.Tests;
 
-public class FakeColorsStore : IColorsStore
+public class InMemoryColorsStore : IColorsStore
 {
     private  Color[] _colors = Array.Empty<Color>();
     

@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using AdminItems.Api;
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
 using Microsoft.AspNetCore.Hosting;
@@ -11,17 +10,17 @@ namespace AdminItems.Tests;
 
 public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {
-    private FakeAdminItemsStore _fakeAdminItemsStore = new();
-    private FakeColorsStore _fakeColorsStore = new();
+    private IAdminItemsStore _adminItemsStore = new InMemoryAdminItemsStore();
+    private IColorsStore _colorsStore = new InMemoryColorsStore();
 
-    public void UseStore(FakeAdminItemsStore fakeAdminItemsStore)
+    public void UseStore(IAdminItemsStore inMemoryAdminItemsStore)
     {
-        _fakeAdminItemsStore = fakeAdminItemsStore;
+        _adminItemsStore = inMemoryAdminItemsStore;
     }
 
-    public void UseStore(FakeColorsStore fakeColorsStore)
+    public void UseStore(IColorsStore inMemoryColorsStore)
     {
-        _fakeColorsStore = fakeColorsStore;
+        _colorsStore = inMemoryColorsStore;
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -29,10 +28,10 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IAdminItemsStore>();
-            services.TryAddSingleton<IAdminItemsStore>(_fakeAdminItemsStore);
+            services.TryAddSingleton(_adminItemsStore);
 
             services.RemoveAll<IColorsStore>();
-            services.TryAddSingleton<IColorsStore>(_fakeColorsStore);
+            services.TryAddSingleton(_colorsStore);
         });
     }
 

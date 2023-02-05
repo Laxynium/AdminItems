@@ -18,7 +18,7 @@ public class GetColorsEndpointTests
     [Fact]
     public async Task colors_defined_in_colors_store_are_returned()
     {
-        var colorsStore = new FakeColorsStore();
+        var colorsStore = new InMemoryColorsStore();
         colorsStore.AddColors(new []
         {
             new Color(5, "celadon"),

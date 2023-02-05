@@ -1,5 +1,4 @@
-﻿using AdminItems.Api;
-using AdminItems.Api.AdminItems;
+﻿using AdminItems.Api.AdminItems;
 using FluentAssertions;
 
 namespace AdminItems.Tests;
@@ -12,15 +11,15 @@ public class CreateAdminItemEndpointTests
     [InlineData("1234567890AB", "Another one", "Admin item with max 12 characters")]
     public async Task valid_admin_item_is_added_to_store(string? code, string? name, string? comments)
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
 
         var request = new { code, name, comments };
         var response = await apiFactory.PostAdminItem(request);
 
         response.Should().Be200Ok();
-        fakeStore.Should().Contain(new AdminItem(
+        adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
             request.comments!));
@@ -29,16 +28,16 @@ public class CreateAdminItemEndpointTests
     [Fact]
     public async Task admin_item_with_200_chars_in_name_is_added_to_store()
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
 
         var name = new string('A', 200);
         var request = new { code = "ADSA321A", name, comments = "200 characters admin item" };
         var response = await apiFactory.PostAdminItem(request);
         
         response.Should().Be200Ok();
-        fakeStore.Should().Contain(new AdminItem(
+        adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
             request.comments!));
@@ -47,9 +46,9 @@ public class CreateAdminItemEndpointTests
     [Fact]
     public async Task null_comments_are_normalized_to_empty_string()
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
         
         var request = new
         {
@@ -60,7 +59,7 @@ public class CreateAdminItemEndpointTests
         var response = await apiFactory.PostAdminItem(request);
         
         response.Should().Be200Ok();
-        fakeStore.Should().Contain(new AdminItem(
+        adminItemsStore.Should().Contain(new AdminItem(
             request.code!,
             request.name!,
             ""));
@@ -73,9 +72,9 @@ public class CreateAdminItemEndpointTests
     [InlineData("321ADFA", "", "Another description", "Name")]
     public async Task invalid_admin_item(string? code, string? name, string? comments, string expectedField)
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
         
         var request = new { code, name, comments };
         var response = await apiFactory.PostAdminItem(request);
@@ -89,9 +88,9 @@ public class CreateAdminItemEndpointTests
     [InlineData("GSGEZDAS1235YZ")]
     public async Task code_cannot_have_more_than_12_characters(string code)
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
         
         var request = new { code, name = "NotRelevant", comments = "NotRelevant" };
         var response = await apiFactory.PostAdminItem(request);
@@ -103,9 +102,9 @@ public class CreateAdminItemEndpointTests
     [Fact]
     public async Task name_cannot_have_more_than_200_characters()
     {
-        var fakeStore = new FakeAdminItemsStore();
+        var adminItemsStore = new InMemoryAdminItemsStore();
         var apiFactory = new AdminItemsApi();
-        apiFactory.UseStore(fakeStore);
+        apiFactory.UseStore(adminItemsStore);
 
         var name = new string('X', 200);
         var request = new { code = "ASDBD123", name = name+'Y', comments = "NotRelevant" };
