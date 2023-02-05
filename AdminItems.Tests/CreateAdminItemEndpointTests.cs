@@ -26,7 +26,7 @@ public class CreateAdminItemEndpointTests
     }
     
     [Fact]
-    public async Task admin_item_with_200_chars_in_name_is_valid()
+    public async Task admin_item_with_200_chars_in_name_is_added_to_store()
     {
         var fakeStore = new FakeAdminItemsStore();
         var apiFactory = new AdminItemsApi();
