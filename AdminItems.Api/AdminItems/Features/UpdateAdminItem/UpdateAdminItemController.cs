@@ -2,7 +2,7 @@
 using AdminItems.Api.Colors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminItems.Api.AdminItems.UpdateAdminItem;
+namespace AdminItems.Api.AdminItems.Features.UpdateAdminItem;
 
 public record AdminItemDto(
     [Required] [StringLength(12)] string Code,

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AdminItems.Api.AdminItems.GetAdminItems;
+namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
 public record Response(IReadOnlyList<AdminItemResponse> Items);
 public record AdminItemResponse(long Id, string Code, string Name, string Color, string? Comments);
