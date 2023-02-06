@@ -1,11 +1,17 @@
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
+using AdminItems.Migrator;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IAdminItemsStore, NullAdminItemsStore>();
 builder.Services.AddSingleton<IColorsStore, NullColorsStore>();
 builder.Services.AddSingleton<IAdminItemIdGenerator, IdGenAdminItemIdGenerator>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedServiceMigrator("adminItems");
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

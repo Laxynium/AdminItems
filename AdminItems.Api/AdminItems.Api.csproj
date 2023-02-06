@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="CSharpFunctionalExtensions" Version="2.37.0" />
+        <PackageReference Include="Dapper" Version="2.0.123" />
         <PackageReference Include="IdGen" Version="3.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
@@ -23,6 +24,21 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="AdminItems.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Colors\Migrations" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AdminItems.Migrator\AdminItems.Migrator.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Migrations\000001_Init.sql" />
+      <EmbeddedResource Include="Migrations\000001_Init.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
