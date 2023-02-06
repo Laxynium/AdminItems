@@ -4,7 +4,7 @@ namespace AdminItems.Tests.Fakes;
 
 public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdminItemsStore
 {
-    public Task Add(long id, AdminItem adminItem)
+    public Task Add(AdminItemId id, AdminItem adminItem)
     {
         base.Add(AdminItemId.Create(id), adminItem);
 

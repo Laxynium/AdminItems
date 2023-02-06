@@ -5,7 +5,7 @@ namespace AdminItems.Api.AdminItems;
 
 public interface IAdminItemsStore
 {
-    public Task Add(long id, AdminItem adminItem);
+    public Task Add(AdminItemId id, AdminItem adminItem);
 
     Task Update(AdminItemId id, AdminItem adminItem);
 
@@ -18,7 +18,7 @@ public interface IAdminItemsStore
 
 internal sealed class NullAdminItemsStore : IAdminItemsStore
 {
-    public Task Add(long id, AdminItem adminItem)
+    public Task Add(AdminItemId id, AdminItem adminItem)
     {
         return Task.CompletedTask;
     }
@@ -29,7 +29,7 @@ internal sealed class NullAdminItemsStore : IAdminItemsStore
     }
 
     public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
-        Func<AdminItem, TProperty> orderer) => 
+        Func<AdminItem, TProperty> orderer) =>
         Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
 
     public Task<bool> Contains(AdminItemId id)
@@ -46,27 +46,45 @@ internal sealed class SqlAdminItemsStore : IAdminItemsStore
     {
         _connectionString = connectionString;
     }
-    public async Task Add(long id, AdminItem adminItem)
+
+    public async Task Add(AdminItemId id, AdminItem adminItem)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            "INSERT INTO admin_items(id, code, name, comments, color) VALUES (@Id, @Code, @Name, @Comments, @Color)",
+            @"INSERT INTO ""admin_items"" (""id"", ""code"", ""name"", ""comments"", ""color"") VALUES (@Id, @Code, @Name, @Comments, @Color)",
             new
             {
-                Id = id, 
-                Code = adminItem.Code, 
-                Name = adminItem.Name, 
+                Id = id.Value,
+                Code = adminItem.Code,
+                Name = adminItem.Name,
                 Comments = adminItem.Comments,
                 Color = adminItem.Color
             });
     }
 
-    public  Task Update(AdminItemId id, AdminItem adminItem)
+    public async Task Update(AdminItemId id, AdminItem adminItem)
     {
-        return Task.CompletedTask;
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.ExecuteAsync(@"
+UPDATE ""admin_items"" ai
+SET 
+    ""code"" = @Code,
+    ""name"" =  @Name,
+    ""comments"" = @Comments,
+    ""color"" = @Color
+WHERE ai.id = @Id",
+            new
+            {
+                Id = id.Value,
+                Code = adminItem.Code,
+                Name = adminItem.Name,
+                Comments = adminItem.Comments,
+                Color = adminItem.Color
+            });
     }
 
-    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper, Func<AdminItem, TProperty> orderer)
+    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
+        Func<AdminItem, TProperty> orderer)
     {
         return Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
     }

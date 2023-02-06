@@ -23,11 +23,28 @@ public class AdminItemsStoreTests
     {
         var adminItem = new AdminItem("ADDB123", "Item_1", "some comment", "red");
         
-        await Run<IAdminItemsStore>(store => store.Add(15, adminItem));
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(15), adminItem));
 
         var adminItems = await GetAdminItems();
         adminItems.Should().HaveCount(1).And.ContainEquivalentOf(new AdminItemDto(
             15, 
+            adminItem.Code, 
+            adminItem.Name, 
+            adminItem.Color, 
+            adminItem.Comments));
+    }
+    
+    [Fact]
+    public async Task admin_item_is_updated()
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(25), new AdminItem("FAD123", "Item_X_15", "", "aqua")));
+
+        var adminItem = new AdminItem("AA123", "Item_Y_20", "Xyz", "azure");
+        await Run<IAdminItemsStore>(store => store.Update(AdminItemId.Create(25), adminItem));
+        
+        var adminItems = await GetAdminItems();
+        adminItems.Should().HaveCount(1).And.ContainEquivalentOf(new AdminItemDto(
+            25, 
             adminItem.Code, 
             adminItem.Name, 
             adminItem.Color, 
