@@ -15,7 +15,7 @@ public class RunMigrationsTests
     }
     
     [Fact]
-    public async Task postgres_database_is_running_migrations_without_errors()
+    public async Task migrations_are_applied()
     {
         var api = new AdminItemsApi(_postgresDatabase);
         var client = api.CreateClient();
@@ -24,6 +24,13 @@ public class RunMigrationsTests
         {
             var result = await connection.QueryAsync<AdminItemDto>(
                 "SELECT ai.id, ai.code, ai.name, ai.color  FROM admin_items ai");
+            result.Should().HaveCount(0);
+        }
+        
+        using (var connection = new NpgsqlConnection(_postgresDatabase.ConnectionString))
+        {
+            var result = await connection.QueryAsync<ColorDto>(
+                "SELECT c.id, c.name FROM colors c");
             result.Should().HaveCount(0);
         }
     }
@@ -41,6 +48,18 @@ public class RunMigrationsTests
             Code = code;
             Name = name;
             Color = color;
+        }
+    }
+
+    private class ColorDto
+    {
+        public long Id { get; }
+        public string Name { get; }
+
+        public ColorDto(long id, string name)
+        {
+            Id = id;
+            Name = name;
         }
     }
 }
