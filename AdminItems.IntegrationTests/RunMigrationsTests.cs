@@ -4,12 +4,11 @@ using Npgsql;
 
 namespace AdminItems.IntegrationTests;
 
-[Collection("Postgres Database")]
-public class RunMigrationsTests
+public class RunMigrationsTests : IntegrationTest
 {
     private readonly PostgresDatabase _postgresDatabase;
 
-    public RunMigrationsTests(PostgresDatabase postgresDatabase)
+    public RunMigrationsTests(PostgresDatabase postgresDatabase):base(postgresDatabase)
     {
         _postgresDatabase = postgresDatabase;
     }

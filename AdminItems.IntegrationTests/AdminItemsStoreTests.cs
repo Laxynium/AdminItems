@@ -6,13 +6,12 @@ using Npgsql;
 
 namespace AdminItems.IntegrationTests;
 
-[Collection("Postgres Database")]
-public class AdminItemsStoreTests
+public class AdminItemsStoreTests : IntegrationTest
 {
     private readonly PostgresDatabase _postgresDatabase;
-    private AdminItemsApi _api;
+    private readonly AdminItemsApi _api;
 
-    public AdminItemsStoreTests(PostgresDatabase postgresDatabase)
+    public AdminItemsStoreTests(PostgresDatabase postgresDatabase):base(postgresDatabase)
     {
         _postgresDatabase = postgresDatabase;
         _api = new AdminItemsApi(_postgresDatabase);
