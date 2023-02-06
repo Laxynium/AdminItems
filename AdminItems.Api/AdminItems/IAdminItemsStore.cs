@@ -89,8 +89,12 @@ WHERE ai.id = @Id",
         return Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
     }
 
-    public Task<bool> Contains(AdminItemId id)
+    public async Task<bool> Contains(AdminItemId id)
     {
-        return Task.FromResult(false);
+        await using var connection = new NpgsqlConnection(_connectionString);
+        var result = await connection.ExecuteScalarAsync<bool>(
+            @"SELECT 1 FROM ""admin_items"" ai WHERE ai.id = @Id",
+            new { Id = id.Value });
+        return result;
     }
 }

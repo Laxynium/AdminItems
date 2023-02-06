@@ -50,6 +50,18 @@ public class AdminItemsStoreTests : IntegrationTest
             adminItem.Comments));
     }
 
+    [Theory]
+    [InlineData(15, true)]
+    [InlineData(25, true)]
+    [InlineData(123, false)]
+    public async Task contains_admin_items(long id, bool expectedContains)
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(25), new AdminItem("FAD123", "Item_X_15", "", "aqua")));
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(15), new AdminItem("AAA123", "Item_Y_25", "X", "yellow")));
+        
+        (await Run<IAdminItemsStore>(store => store.Contains(AdminItemId.Create(id)))).Should().Be(expectedContains);
+    }
+
     private async Task<List<AdminItemDto>> GetAdminItems()
     {
         await using var connection = new NpgsqlConnection(_postgresDatabase.ConnectionString);
@@ -65,5 +77,11 @@ public class AdminItemsStoreTests : IntegrationTest
         await using var scope = _api.Services.CreateAsyncScope();
         var store = scope.ServiceProvider.GetRequiredService<TService>();
         await action(store);
+    }
+    private async Task<bool> Run<TService>(Func<TService, Task<bool>> action) where TService : notnull
+    {
+        await using var scope = _api.Services.CreateAsyncScope();
+        var store = scope.ServiceProvider.GetRequiredService<TService>();
+        return await action(store);
     }
 }
