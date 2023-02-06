@@ -31,6 +31,7 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("testing");
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<IAdminItemsStore>();

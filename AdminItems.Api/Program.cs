@@ -8,10 +8,7 @@ builder.Services.AddSingleton<IAdminItemsStore, NullAdminItemsStore>();
 builder.Services.AddSingleton<IColorsStore, NullColorsStore>();
 builder.Services.AddSingleton<IAdminItemIdGenerator, IdGenAdminItemIdGenerator>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHostedServiceMigrator("adminItems");
-}
+builder.Services.AddHostedServiceMigrator(builder.Configuration, "adminItems");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
