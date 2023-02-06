@@ -4,7 +4,11 @@ using AdminItems.Migrator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IAdminItemsStore, NullAdminItemsStore>();
+builder.Services.AddSingleton<IAdminItemsStore>(sp =>
+{
+    var cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("postgres")!;
+    return new SqlAdminItemsStore(cs);
+});
 builder.Services.AddSingleton<IColorsStore, NullColorsStore>();
 builder.Services.AddSingleton<IAdminItemIdGenerator, IdGenAdminItemIdGenerator>();
 
