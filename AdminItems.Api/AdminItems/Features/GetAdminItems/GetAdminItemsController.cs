@@ -51,6 +51,9 @@ public class GetAdminItemsController : ControllerBase
     private static ((string column, string order)? ordering, BadRequestObjectResult? error) ParseOrderBy(string orderBy)
     {
         var split = orderBy.Split(" ");
+        if (split.Length != 2)
+            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"should be in format [column] [asc|desc]"));
+        
         var column = split[0];
         var order = split[1];
 

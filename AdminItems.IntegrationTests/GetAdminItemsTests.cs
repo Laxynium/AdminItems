@@ -65,6 +65,8 @@ public class GetAdminItemsTests : IntegrationTest
     [Theory]
     [InlineData("wrong_column asc")]
     [InlineData("code asscc")]
+    [InlineData("code")]
+    [InlineData("code asc aa")]
     public async Task order_by_is_invalid(string orderBy)
     {
         await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(1),
