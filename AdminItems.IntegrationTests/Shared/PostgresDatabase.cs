@@ -14,9 +14,7 @@ public class PostgresDatabase : IAsyncLifetime
     private readonly PostgresContainerWrapper _postgresqlContainer = new(false);
     private Respawner? _respawner;
 
-    public string ConnectionString =>
-        "Server=127.0.0.1;Port=5432;UserId=postgres;Password=postgres;Database=admin_items_db_tests";
-    
+    public string ConnectionString => _postgresqlContainer.ConnectionString;
     public async Task InitializeAsync()
     {
         await _postgresqlContainer.StartAsync();
@@ -56,6 +54,8 @@ public class PostgresDatabase : IAsyncLifetime
             _useExistingContainer = useExistingContainer;
         }
 
+        public string ConnectionString => _postgresqlContainer?.ConnectionString
+            ?? "Server=127.0.0.1;Port=5432;UserId=postgres;Password=postgres;Database=admin_items_db_tests";
         public async Task StartAsync()
         {
             if (_useExistingContainer)
