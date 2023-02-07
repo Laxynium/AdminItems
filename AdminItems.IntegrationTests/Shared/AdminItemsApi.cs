@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 
@@ -28,11 +29,16 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         });
     }
     
-    public async Task<HttpResponseMessage> GetAdminItems()
+    public Task<HttpResponseMessage> GetAdminItems() => 
+        GetAdminItems(Array.Empty<(string key, string value)>());
+
+    public async Task<HttpResponseMessage> GetAdminItems(params (string key, string value)[] queries)
     {
         var client = GetClient();
-        return await client.GetAsync("adminItems");
+        var queryBuilder = new QueryBuilder(queries.ToDictionary(x => x.key, x => x.value));
+        return await client.GetAsync($"adminItems{queryBuilder}");
     }
+
     
     public async Task<HttpResponseMessage> GetColors()
     {

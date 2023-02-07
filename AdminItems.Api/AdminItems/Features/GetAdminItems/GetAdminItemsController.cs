@@ -54,9 +54,15 @@ public class GetAdminItemsController : ControllerBase
         var column = split[0];
         var order = split[1];
 
+        if (!new[] { "code", "name", "color" }.Contains(column))
+            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"Column {column} was not found"));
+
+        if(!new []{"asc", "desc"}.Contains(order))
+            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"Order {order} was not found"));
+        
         return ((column, order), null);
     }
-    private record AdminItemRecord(long Id, string Code, string Name, string Color, long RowNumber);
+
     private static Query SortBy(Query query, string fieldName)
     {
         switch (fieldName)
@@ -64,8 +70,18 @@ public class GetAdminItemsController : ControllerBase
             case "code":
                 query.OrderBy("code");
                 break;
+            case "name":
+                query.OrderBy("name");
+                break;
+            case "color":
+                query.OrderBy("color");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fieldName));
         }
 
         return query;
     }
+
+    private record AdminItemRecord(long Id, string Code, string Name, string Color, long RowNumber);
 }

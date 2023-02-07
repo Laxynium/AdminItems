@@ -61,4 +61,33 @@ public class GetAdminItemsTests : IntegrationTest
                 }
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
+
+    [Theory]
+    [InlineData("wrong_column asc")]
+    [InlineData("code asscc")]
+    public async Task order_by_is_invalid(string orderBy)
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(1),
+            new AdminItem("BBB13", "Admin Item1", "Some comment 1", "red")));
+        
+        var response = await Api.GetAdminItems(("orderBy", orderBy));
+
+        response.Should().Be400BadRequest()
+            .And.HaveError("orderBy", "*");
+    }
+
+    [Theory]
+    [InlineData("code asc")]
+    [InlineData("code desc")]
+    [InlineData("name desc")]
+    [InlineData("color asc")]
+    public async Task order_by_is_valid(string orderBy)
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(1),
+            new AdminItem("BBB13", "Admin Item1", "Some comment 1", "red")));
+        
+        var response = await Api.GetAdminItems(("orderBy", orderBy));
+
+        response.Should().Be200Ok();
+    }
 }

@@ -17,4 +17,12 @@ public static class ErrorResponses
             {nameof(adminItemId), new []{$"Admin item with id {adminItemId} was not found"}}
         }));
     }
+    
+    public static BadRequestObjectResult InvalidOrderBy(string orderBy, string reason)
+    {
+        return new BadRequestObjectResult(new HttpValidationProblemDetails(new Dictionary<string, string[]>
+        {
+            {nameof(orderBy), new []{$"Order by {orderBy} is invalid, because: {reason}"}}
+        }));
+    }
 }
