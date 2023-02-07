@@ -81,12 +81,6 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         
         return await client.PutAsync($"adminItems/{adminItemId}", content);
     }
-    
-    public async Task<HttpResponseMessage> GetAdminItems()
-    {
-        var client = GetClient();
-        return await client.GetAsync("adminItems");
-    }
 
     public async Task<HttpResponseMessage> GetColors()
     {

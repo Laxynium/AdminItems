@@ -11,12 +11,10 @@ public record AdminItemResponse(long Id, string Code, string Name, string Color,
 [Route("adminItems")]
 public class GetAdminItemsController : ControllerBase
 {
-    private readonly IAdminItemsStore _adminItemsStore;
     private readonly NpgsqlConnection _connection;
 
-    public GetAdminItemsController(IAdminItemsStore adminItemsStore, NpgsqlConnection connection)
+    public GetAdminItemsController(NpgsqlConnection connection)
     {
-        _adminItemsStore = adminItemsStore;
         _connection = connection;
     }
     
