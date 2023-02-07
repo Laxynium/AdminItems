@@ -18,6 +18,7 @@ public class Migrator
 
     public static Migrator Create(string connectionString, string scriptsPath, ILoggerFactory loggerFactory)
     {
+        EnsureDatabase.For.PostgresqlDatabase(connectionString);
         var configuration =
             DeployChanges.To
                 .PostgresqlDatabase(connectionString)
