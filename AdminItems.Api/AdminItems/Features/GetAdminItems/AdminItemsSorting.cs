@@ -6,13 +6,22 @@ namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
 public class AdminItemsSorting
 {
-    public string Column { get; }
-    public string Order { get; }
-
-    private AdminItemsSorting(string column, string order)
+    private static readonly Dictionary<string, (string column, Func<Query, string, Query> orderBy)> _columns = new()
     {
-        Column = column;
-        Order = order;
+        { "name", ("name", (q, o) => SortBy(q, "name", o)) },
+        { "code", ("code", (q, o) => SortBy(q, "code", o)) },
+        { "color", ("color", (q, o) => SortBy(q, "color", o)) }
+    };
+
+    private readonly string _column;
+    private readonly string _order;
+    private readonly Func<Query, string, Query> _orderBy;
+
+    private AdminItemsSorting(string column, string order, Func<Query, string, Query> orderBy)
+    {
+        _column = column;
+        _order = order;
+        _orderBy = orderBy;
     }
 
     public static Result<AdminItemsSorting, BadRequestObjectResult> Parse(string orderBy)
@@ -25,33 +34,29 @@ public class AdminItemsSorting
         var column = split[0];
         var order = split[1];
 
-        if (!new[] { "code", "name", "color" }.Contains(column))
+        if (!_columns.ContainsKey(column))
+        {
             return Result.Failure<AdminItemsSorting, BadRequestObjectResult>(
                 ErrorResponses.InvalidOrderBy(orderBy, $"Column {column} was not found"));
+        }
 
-        if(!new []{"asc", "desc"}.Contains(order))
+        if (!new[] { "asc", "desc" }.Contains(order))
             return Result.Failure<AdminItemsSorting, BadRequestObjectResult>(
                 ErrorResponses.InvalidOrderBy(orderBy, $"Order {order} was not found"));
 
-        return Result.Success<AdminItemsSorting, BadRequestObjectResult>(new AdminItemsSorting(column, order));
+        var (name, orderer) = _columns[column];
+        return Result.Success<AdminItemsSorting, BadRequestObjectResult>(new AdminItemsSorting(name, order, orderer));
     }
 
-    public Query Apply(Query query)
-    {
-        switch (Column)
+    public Query Apply(Query query) =>
+        _orderBy.Invoke(query, _order)
+            .Slice(column: _column);
+
+    private static Query SortBy(Query query, string column, string order) =>
+        order switch
         {
-            case "code":
-                query.OrderBy("code");
-                break;
-            case "name":
-                query.OrderBy("name");
-                break;
-            case "color":
-                query.OrderBy("color");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException("column");
-        }
-        return query.Slice(column: Column);
-    }
+            "asc" => query.OrderBy(column),
+            "desc" => query.OrderByDesc(column),
+            _ => throw new ArgumentOutOfRangeException(nameof(order))
+        };
 }
