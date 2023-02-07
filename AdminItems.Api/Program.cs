@@ -15,7 +15,11 @@ builder.Services.AddSingleton<IAdminItemsStore>(sp =>
     var cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("postgres")!;
     return new SqlAdminItemsStore(cs);
 });
-builder.Services.AddSingleton<IColorsStore, NullColorsStore>();
+builder.Services.AddSingleton<IColorsStore>(sp =>
+{
+    var cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("postgres")!;
+    return new SqlColorStore(cs);
+});
 builder.Services.AddSingleton<IAdminItemIdGenerator, IdGenAdminItemIdGenerator>();
 
 builder.Services.AddHostedServiceMigrator(builder.Configuration, "adminItems");

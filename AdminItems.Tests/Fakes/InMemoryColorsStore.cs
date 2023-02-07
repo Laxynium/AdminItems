@@ -12,9 +12,4 @@ public class InMemoryColorsStore : IColorsStore
     }
 
     public Task<Color?> Find(long colorId) => Task.FromResult(_colors.FirstOrDefault(x=>x.Id == colorId));
-
-    public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper) =>
-        Task.FromResult(_colors
-            .Select(mapper)
-            .ToList() as IReadOnlyList<TResult>);
 }

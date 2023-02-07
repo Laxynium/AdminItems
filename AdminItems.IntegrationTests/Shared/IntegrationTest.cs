@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AdminItems.Api.Colors;
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace AdminItems.IntegrationTests.Shared;
 
@@ -29,4 +32,9 @@ public class IntegrationTest : IAsyncLifetime
         var store = scope.ServiceProvider.GetRequiredService<TService>();
         return await action(store);
     }
+    
+    protected async Task ThereIsColor(Color color) =>
+        await Run<NpgsqlConnection>(connection => connection.ExecuteAsync(
+            "INSERT INTO colors(id, name) VALUES (@Id, @Name)",
+            new { Id = color.Id, Name = color.Name }));
 }

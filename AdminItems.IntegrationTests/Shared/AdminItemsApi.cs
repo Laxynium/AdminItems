@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 
@@ -36,6 +38,26 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     {
         var client = GetClient();
         return await client.GetAsync("colors");
+    }
+    
+    public async Task<HttpResponseMessage> PostAdminItem(object request)
+    {
+        var client = GetClient();
+        
+        var serialized = JsonSerializer.Serialize(request);
+        var content = new StringContent(serialized, Encoding.UTF8, "application/json");
+        
+        return await client.PostAsync("adminItems", content);
+    }
+
+    public async Task<HttpResponseMessage> PutAdminItem(long adminItemId, object request)
+    {
+        var client = GetClient();
+        
+        var serialized = JsonSerializer.Serialize(request);
+        var content = new StringContent(serialized, Encoding.UTF8, "application/json");
+        
+        return await client.PutAsync($"adminItems/{adminItemId}", content);
     }
     
     private HttpClient GetClient() => _client ??= CreateClient();

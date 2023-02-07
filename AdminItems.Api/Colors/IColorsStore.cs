@@ -1,15 +1,31 @@
+using Dapper;
+using Npgsql;
+
 namespace AdminItems.Api.Colors;
 
 public interface IColorsStore
 {
     Task<Color?> Find(long colorId);
-    Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper);
 }
 
-internal sealed class NullColorsStore : IColorsStore
+internal sealed class SqlColorStore : IColorsStore
 {
-    public Task<Color?> Find(long colorId) => Task.FromResult((Color?)null);
+    private readonly string _connectionString;
 
-    public Task<IReadOnlyList<TResult>> GetAll<TResult>(Func<Color, TResult> mapper) => 
-        Task.FromResult<IReadOnlyList<TResult>>(new List<TResult>());
+    public SqlColorStore(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
+    public async Task<Color?> Find(long colorId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        var color = await connection.QueryFirstOrDefaultAsync<Color>(@"
+SELECT ""id"", ""name"" 
+FROM ""colors"" c 
+WHERE ""id"" = @Id", new {Id = colorId});
+        
+        return color;
+    }
 }

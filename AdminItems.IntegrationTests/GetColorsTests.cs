@@ -1,8 +1,6 @@
 ﻿using AdminItems.Api.Colors;
 using AdminItems.IntegrationTests.Shared;
-using Dapper;
 using FluentAssertions;
-using Npgsql;
 
 namespace AdminItems.IntegrationTests;
 
@@ -34,9 +32,4 @@ public class GetColorsTests : IntegrationTest
                 }
             });
     }
-
-    private async Task ThereIsColor(Color color) =>
-        await Run<NpgsqlConnection>(connection => connection.ExecuteAsync(
-            "INSERT INTO colors(id, name) VALUES (@Id, @Name)",
-            new { Id = color.Id, Name = color.Name }));
 }
