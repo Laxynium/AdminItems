@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using SqlKata;
 using SqlKata.Compilers;
 using SqlKata.Execution;
 
@@ -10,7 +11,10 @@ namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 public record Request([Range(1, 200)]int PageSize = 25, 
     string[]? Before = null, 
     string[]? After = null, 
-    string OrderBy = "code asc");
+    string OrderBy = "code asc",
+    string? Code = null,
+    string? Name = null,
+    string? Color = null);
 public record Response(IReadOnlyList<AdminItemResponse> Items, string[]? Before = null, string[]? After = null);
 public record AdminItemResponse(long Id, string Code, string Name, string Color);
 
@@ -32,11 +36,19 @@ public class GetAdminItemsController : ControllerBase
         if (isFailure)
             return error;
 
-        var query = sorting.BuildQuery(request.PageSize, request.Before, request.After);
+        var query = new Query("admin_items").Select("id", "code", "name", "color");
+
+        query = ApplyCodeFilter(query, request.Code);
+        query = ApplyNameFilter(query, request.Name);
+        query = ApplyColorFilter(query, request.Color);
+        
+        query = sorting.ApplyPagination(request.PageSize, request.Before, request.After, query);
         
         var postgresCompiler = new PostgresCompiler();
         var db = new QueryFactory(_connection, postgresCompiler);
 
+        var sql = postgresCompiler.Compile(query);
+        
         var queryResult = (await db.FromQuery(query).GetAsync<AdminItemRecord>()).ToList();
         
         var items = queryResult
@@ -46,5 +58,29 @@ public class GetAdminItemsController : ControllerBase
         var (before, after) = sorting.GetSlice(queryResult);
         
         return Ok(new Response(items, before, after));
+    }
+
+    private static Query ApplyCodeFilter(Query query, string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+            return query;
+        query.WhereLike("code", code, escapeCharacter:@"\");
+        return query;
+    }
+    
+    private static Query ApplyNameFilter(Query query, string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return query;
+        query.WhereLike("name", name, escapeCharacter:@"\");
+        return query;
+    }
+    
+    private static Query ApplyColorFilter(Query query, string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color))
+            return query;
+        query.WhereLike("color", color, escapeCharacter:@"\");
+        return query;
     }
 }

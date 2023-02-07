@@ -51,21 +51,20 @@ public class AdminItemsSorting
         return Result.Success<AdminItemsSorting, BadRequestObjectResult>(new AdminItemsSorting(columns, order, getFields));
     }
 
-    public Query BuildQuery(int pageSize, string[]? before, string[]? after)
+    public Query ApplyPagination(int pageSize, string[]? before, string[]? after, Query query)
     {
-        var innerQuery = new Query("admin_items").Select("id", "code", "name", "color");
-        ApplyPaginationOn(innerQuery, _columns, pageSize, before, after).As("inner");
+        ApplyPaginationOn(query, _columns, pageSize, before, after).As("inner");
 
-        var query = new Query().From(innerQuery);
+        var resultQuery = new Query().From(query);
 
-        query = _order switch
+        resultQuery = _order switch
         {
-            "asc" => query.OrderBy(_columns),
-            "desc" => query.OrderByDesc(_columns),
-            _ => query
+            "asc" => resultQuery.OrderBy(_columns),
+            "desc" => resultQuery.OrderByDesc(_columns),
+            _ => resultQuery
         };
 
-        return query;
+        return resultQuery;
     }
     
     internal (string[]? before, string[]? after) GetSlice(IReadOnlyCollection<AdminItemRecord> items)

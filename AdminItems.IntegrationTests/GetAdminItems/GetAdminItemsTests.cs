@@ -2,7 +2,7 @@
 using AdminItems.IntegrationTests.Shared;
 using FluentAssertions;
 
-namespace AdminItems.IntegrationTests;
+namespace AdminItems.IntegrationTests.GetAdminItems;
 
 public class GetAdminItemsTests : IntegrationTest
 {
