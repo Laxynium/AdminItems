@@ -35,13 +35,15 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     public Task<HttpResponseMessage> GetAdminItems(params (string key, string value)[] queries) => 
         GetAdminItems((null, null, 50), queries);
 
-    public async Task<HttpResponseMessage> GetAdminItems((string? after, string? before, int pageSize) pagination,
+    public async Task<HttpResponseMessage> GetAdminItems((string[]? after, string[]? before, int pageSize) pagination,
         params (string key, string value)[] queries)
     {
         var client = GetClient();
         var queryBuilder = new QueryBuilder(queries.ToDictionary(x => x.key, x => x.value)) { { "pageSize", pagination.pageSize.ToString() } };
         if(pagination.after is not null)
             queryBuilder.Add("after", pagination.after);
+        if(pagination.before is not null)
+            queryBuilder.Add("before", pagination.before);
             
         return await client.GetAsync($"adminItems{queryBuilder}");
     }

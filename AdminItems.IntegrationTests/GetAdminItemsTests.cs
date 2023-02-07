@@ -168,12 +168,12 @@ public class GetAdminItemsTests : IntegrationTest
                     new { id = 1, code = "BBB13", name = "Admin Item1", color = "red" },
                     new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
                 },
-                after = "green",
-                before = "red"
+                after = new []{"green", "3"},
+                before = new []{"red", "1"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
         //when
-        response = await Api.GetAdminItems((after: "green", before: null, 2), ("orderBy","color desc"));
+        response = await Api.GetAdminItems((after: new[]{"green", "3"}, before: null, 2), ("orderBy","color desc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -182,8 +182,8 @@ public class GetAdminItemsTests : IntegrationTest
                 {
                     new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue" }
                 },
-                after = "blue",
-                before = "blue"
+                after = new []{"blue", "2"},
+                before = new []{"blue", "2"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
     
@@ -209,12 +209,12 @@ public class GetAdminItemsTests : IntegrationTest
                 {
                     new { id = 1, code = "BBB13", name = "Admin Item1", color = "red" }
                 },
-                after = "Admin Item1",
-                before = "Admin Item1"
+                after = new[]{"Admin Item1"},
+                before = new[]{"Admin Item1"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
         //when
-        response = await Api.GetAdminItems((after: "Admin Item1", before: null, 2), ("orderBy","name asc"));
+        response = await Api.GetAdminItems((after: new []{"Admin Item1"}, before: null, 2), ("orderBy","name asc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -224,8 +224,8 @@ public class GetAdminItemsTests : IntegrationTest
                     new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue" },
                     new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
                 },
-                after = "Admin Item3",
-                before = "Admin Item2"
+                after = new []{"Admin Item3"},
+                before = new []{"Admin Item2"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
     
@@ -253,11 +253,11 @@ public class GetAdminItemsTests : IntegrationTest
                     new { id = 4, code = "AAA05", name = "Admin Item4", color = "black" },
                     new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
                 },
-                after = "AAA11",
-                before = "AAA05"
+                after = new[]{"AAA11"},
+                before = new[]{"AAA05"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
-        response = await Api.GetAdminItems((after: "AAA11", before: null, 1), ("orderBy","code asc"));
+        response = await Api.GetAdminItems((after: new []{"AAA11"}, before: null, 1), ("orderBy","code asc"));
         response.Should().Be200Ok()
             .And.BeAs(new
             {
@@ -265,12 +265,12 @@ public class GetAdminItemsTests : IntegrationTest
                 {
                     new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue" },
                 },
-                after = "BBB12",
-                before = "BBB12"
+                after = new[]{"BBB12"},
+                before = new[]{"BBB12"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
         //when
-        response = await Api.GetAdminItems((after: null, before: "BBB12", 2), ("orderBy","code asc"));
+        response = await Api.GetAdminItems((after: null, before: new[]{"BBB12"}, 2), ("orderBy","code asc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -280,8 +280,8 @@ public class GetAdminItemsTests : IntegrationTest
                     new { id = 4, code = "AAA05", name = "Admin Item4", color = "black" },
                     new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
                 },
-                after = "AAA11",
-                before = "AAA05"
+                after = new[]{"AAA11"},
+                before = new[]{"AAA05"}
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
 

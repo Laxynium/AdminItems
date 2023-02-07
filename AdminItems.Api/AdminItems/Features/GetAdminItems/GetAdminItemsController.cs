@@ -2,14 +2,16 @@
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using SqlKata;
 using SqlKata.Compilers;
 using SqlKata.Execution;
 
 namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
-public record Request([Range(1, 200)]int PageSize = 25, string? Before = null, string? After = null, string OrderBy = "code asc");
-public record Response(IReadOnlyList<AdminItemResponse> Items, string? Before = null, string? After = null);
+public record Request([Range(1, 200)]int PageSize = 25, 
+    string[]? Before = null, 
+    string[]? After = null, 
+    string OrderBy = "code asc");
+public record Response(IReadOnlyList<AdminItemResponse> Items, string[]? Before = null, string[]? After = null);
 public record AdminItemResponse(long Id, string Code, string Name, string Color);
 
 [ApiController]
@@ -30,8 +32,7 @@ public class GetAdminItemsController : ControllerBase
         if (isFailure)
             return error;
 
-        var query = sorting.ApplySorting(new Query("admin_items").Select("id", "code", "name", "color"));
-        query = sorting.ApplyPagination(query, request.PageSize, request.After);
+        var query = sorting.BuildQuery(request.PageSize, request.Before, request.After);
         
         var postgresCompiler = new PostgresCompiler();
         var db = new QueryFactory(_connection, postgresCompiler);
