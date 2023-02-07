@@ -12,8 +12,6 @@ public class FilterAdminItemsTests : IntegrationTest
 
     [Theory]
     [InlineData("DDD12")]
-    [InlineData("Ddd12")]
-    [InlineData("DdD12")]
     [InlineData("%12")]
     [InlineData("%DD%")]
     public async Task matches_code_pattern(string code)

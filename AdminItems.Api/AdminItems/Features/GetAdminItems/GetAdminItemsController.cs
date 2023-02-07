@@ -46,8 +46,6 @@ public class GetAdminItemsController : ControllerBase
         
         var postgresCompiler = new PostgresCompiler();
         var db = new QueryFactory(_connection, postgresCompiler);
-
-        var sql = postgresCompiler.Compile(query);
         
         var queryResult = (await db.FromQuery(query).GetAsync<AdminItemRecord>()).ToList();
         
@@ -64,7 +62,7 @@ public class GetAdminItemsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(code))
             return query;
-        query.WhereLike("code", code, escapeCharacter:@"\");
+        query.WhereLike("code", code, true);
         return query;
     }
     
@@ -72,7 +70,7 @@ public class GetAdminItemsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(name))
             return query;
-        query.WhereLike("name", name, escapeCharacter:@"\");
+        query.WhereLike("name", name, true);
         return query;
     }
     
@@ -80,7 +78,7 @@ public class GetAdminItemsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(color))
             return query;
-        query.WhereLike("color", color, escapeCharacter:@"\");
+        query.WhereLike("color", color, true);
         return query;
     }
 }
