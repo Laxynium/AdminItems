@@ -6,9 +6,9 @@ public class AdminItem : ValueObject
 {
     public AdminItem(string code, string name, string comments, string color)
     {
-        Code = code;
-        Name = name;
-        Comments = comments;
+        Code = code.Trim();
+        Name = name.Trim();
+        Comments = comments.Trim();
         Color = color;
     }
 
