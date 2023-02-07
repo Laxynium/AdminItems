@@ -9,33 +9,7 @@ public interface IAdminItemsStore
 
     Task Update(AdminItemId id, AdminItem adminItem);
 
-    Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
-        Func<AdminItemId, AdminItem, TResult> mapper,
-        Func<AdminItem, TProperty> orderer);
-
     Task<bool> Contains(AdminItemId id);
-}
-
-internal sealed class NullAdminItemsStore : IAdminItemsStore
-{
-    public Task Add(AdminItemId id, AdminItem adminItem)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task Update(AdminItemId id, AdminItem adminItem)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
-        Func<AdminItem, TProperty> orderer) =>
-        Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
-
-    public Task<bool> Contains(AdminItemId id)
-    {
-        return Task.FromResult(false);
-    }
 }
 
 internal sealed class SqlAdminItemsStore : IAdminItemsStore
@@ -81,12 +55,6 @@ WHERE ai.id = @Id",
                 Comments = adminItem.Comments,
                 Color = adminItem.Color
             });
-    }
-
-    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(Func<AdminItemId, AdminItem, TResult> mapper,
-        Func<AdminItem, TProperty> orderer)
-    {
-        return Task.FromResult(new List<TResult>() as IReadOnlyList<TResult>);
     }
 
     public async Task<bool> Contains(AdminItemId id)

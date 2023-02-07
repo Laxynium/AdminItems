@@ -1,9 +1,15 @@
 using AdminItems.Api.AdminItems;
 using AdminItems.Api.Colors;
 using AdminItems.Migrator;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<NpgsqlConnection>(sp =>
+{
+    var cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("postgres")!;
+    return new NpgsqlConnection(cs);
+});
 builder.Services.AddSingleton<IAdminItemsStore>(sp =>
 {
     var cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("postgres")!;

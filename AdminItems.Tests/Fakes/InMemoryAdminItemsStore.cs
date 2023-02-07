@@ -20,14 +20,6 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
         return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyList<TResult>> GetAll<TResult, TProperty>(
-        Func<AdminItemId, AdminItem, TResult> mapper,
-        Func<AdminItem, TProperty> orderer) => 
-        Task.FromResult(Keys.Select(x => new { key = x, value = base[x] })
-            .OrderBy(x => orderer(x.value))
-            .Select(x => mapper(x.key, x.value))
-            .ToList() as IReadOnlyList<TResult>);
-
     public Task<bool> Contains(AdminItemId id) => 
         Task.FromResult(ContainsKey(id));
 }

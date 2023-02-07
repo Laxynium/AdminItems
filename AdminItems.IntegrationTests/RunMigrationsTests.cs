@@ -1,3 +1,4 @@
+using AdminItems.IntegrationTests.Shared;
 using Dapper;
 using FluentAssertions;
 using Npgsql;

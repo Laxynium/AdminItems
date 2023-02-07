@@ -6,7 +6,7 @@ using Npgsql;
 using Respawn;
 using Respawn.Graph;
 
-namespace AdminItems.IntegrationTests;
+namespace AdminItems.IntegrationTests.Shared;
 
 public class PostgresDatabase : IAsyncLifetime
 {

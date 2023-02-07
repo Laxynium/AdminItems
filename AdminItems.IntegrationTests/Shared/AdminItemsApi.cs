@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 
-namespace AdminItems.IntegrationTests;
+namespace AdminItems.IntegrationTests.Shared;
 
 public class AdminItemsApi : WebApplicationFactory<Api.Program>
 {
@@ -24,6 +24,12 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
                 { "connectionStrings:postgres", _postgresDatabase.ConnectionString }
             });
         });
+    }
+    
+    public async Task<HttpResponseMessage> GetAdminItems()
+    {
+        var client = GetClient();
+        return await client.GetAsync("adminItems");
     }
     
     private HttpClient GetClient() => _client ??= CreateClient();
