@@ -30,8 +30,7 @@ public class GetAdminItemsTests : IntegrationTest
                         id = 1,
                         code,
                         name,
-                        color = color,
-                        comments = comments ?? string.Empty
+                        color = color
                     }
                 }
             });
@@ -56,9 +55,9 @@ public class GetAdminItemsTests : IntegrationTest
             {
                 items = new[]
                 {
-                    new { id = 3, code = "AAA11", name = "Admin Item3", color = "green", comments = "Some comment 3" },
-                    new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue", comments = "Some comment 2" },
-                    new { id = 1, code = "BBB13", name = "Admin Item1", color = "red", comments = "Some comment 1" }
+                    new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" },
+                    new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue" },
+                    new { id = 1, code = "BBB13", name = "Admin Item1", color = "red" }
                 }
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }

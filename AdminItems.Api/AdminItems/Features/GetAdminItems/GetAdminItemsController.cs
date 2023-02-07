@@ -5,7 +5,7 @@ using Npgsql;
 namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
 public record Response(IReadOnlyList<AdminItemResponse> Items);
-public record AdminItemResponse(long Id, string Code, string Name, string Color, string? Comments);
+public record AdminItemResponse(long Id, string Code, string Name, string Color);
     
 [ApiController]
 [Route("adminItems")]
@@ -26,7 +26,6 @@ SELECT ""id""
     , ""code""
     , ""name""
     , ""color""
-    , ""comments""
 FROM ""admin_items""
 ORDER BY ""code""");
         return Ok(new Response(result.ToList()));

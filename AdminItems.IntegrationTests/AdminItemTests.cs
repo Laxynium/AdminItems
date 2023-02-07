@@ -42,7 +42,6 @@ public class AdminItemTests : IntegrationTest
                         code = "CODE_1",
                         name = "admin_item_1",
                         color = "blue",
-                        comments = ""
                     }
                 }
             });
@@ -70,7 +69,6 @@ public class AdminItemTests : IntegrationTest
                         code = "CODE_5",
                         name = "admin_item_4",
                         color = "purple",
-                        comments = "updated"
                     }
                 }
             });
