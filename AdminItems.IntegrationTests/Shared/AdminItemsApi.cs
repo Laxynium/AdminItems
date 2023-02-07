@@ -32,5 +32,11 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         return await client.GetAsync("adminItems");
     }
     
+    public async Task<HttpResponseMessage> GetColors()
+    {
+        var client = GetClient();
+        return await client.GetAsync("colors");
+    }
+    
     private HttpClient GetClient() => _client ??= CreateClient();
 }

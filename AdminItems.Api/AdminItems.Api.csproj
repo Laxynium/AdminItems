@@ -27,10 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Colors\Migrations" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\AdminItems.Migrator\AdminItems.Migrator.csproj" />
     </ItemGroup>
 
