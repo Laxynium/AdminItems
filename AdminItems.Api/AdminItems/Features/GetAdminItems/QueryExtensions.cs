@@ -13,9 +13,9 @@ internal static class QueryExtensions
     [Pure]
     public static Query Slice(
         this Query query,
-        string after = null,
+        string? after = null,
         int first = 0,
-        string before = null,
+        string? before = null,
         int last = 0,
         string column = "Id")
     {
@@ -40,7 +40,7 @@ internal static class QueryExtensions
             .From("q");
 
         // Select all rows after provided cursor
-        if (!String.IsNullOrWhiteSpace(after))
+        if (!string.IsNullOrWhiteSpace(after))
         {
             internalQuery.Where("RowNumber", ">",
                 new Query("q")
@@ -49,7 +49,7 @@ internal static class QueryExtensions
         }
 
         // Select all rows before provided cursor
-        if (!String.IsNullOrWhiteSpace(before))
+        if (!string.IsNullOrWhiteSpace(before))
         {
             internalQuery.Where("RowNumber", "<",
                 new Query("q")
@@ -61,7 +61,7 @@ internal static class QueryExtensions
         if (first > 0)
         {
             // If the after cursor is defined
-            if (!String.IsNullOrWhiteSpace(after))
+            if (!string.IsNullOrWhiteSpace(after))
             {
                 internalQuery.Where("RowNumber", "<=",
                     new Query("q")
@@ -79,7 +79,7 @@ internal static class QueryExtensions
         if (last > 0)
         {
             // If the before cursor is defined
-            if (!String.IsNullOrWhiteSpace(before))
+            if (!string.IsNullOrWhiteSpace(before))
             {
                 internalQuery.Where("RowNumber", ">=",
                     new Query("q")

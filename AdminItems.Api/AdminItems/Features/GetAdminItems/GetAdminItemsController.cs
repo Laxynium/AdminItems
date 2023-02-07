@@ -7,8 +7,8 @@ using SqlKata.Execution;
 
 namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
-public record Request(string OrderBy = "code asc");
-public record Response(IReadOnlyList<AdminItemResponse> Items);
+public record Request(int PageSize = 25, string? Before = null, string? After = null, string OrderBy = "code asc");
+public record Response(IReadOnlyList<AdminItemResponse> Items, string? Before = null, string? After = null);
 
 public record AdminItemResponse(long Id, string Code, string Name, string Color);
 
@@ -30,18 +30,20 @@ public class GetAdminItemsController : ControllerBase
         if (isFailure)
             return error;
 
-        var query = sorting.Apply(new Query("admin_items").Select("id", "code", "name", "color"));
+        var query = sorting.ApplySorting(new Query("admin_items").Select("id", "code", "name", "color"));
+        query = sorting.ApplyPagination(query, request.PageSize, request.After);
         
         var postgresCompiler = new PostgresCompiler();
         var db = new QueryFactory(_connection, postgresCompiler);
 
-        var queryResult = await db.FromQuery(query).GetAsync<AdminItemRecord>();
-
+        var queryResult = (await db.FromQuery(query).GetAsync<AdminItemRecord>()).ToList();
+        
         var items = queryResult
             .Select(x => new AdminItemResponse(x.Id, x.Code, x.Name, x.Color))
             .ToList();
+
+        var (before, after) = sorting.GetSlice(queryResult);
         
-        return Ok(new Response(items));
+        return Ok(new Response(items, before, after));
     }
-    private record AdminItemRecord(long Id, string Code, string Name, string Color, long RowNumber);
 }

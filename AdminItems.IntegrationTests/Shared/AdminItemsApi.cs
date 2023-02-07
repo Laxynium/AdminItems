@@ -32,14 +32,21 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
     public Task<HttpResponseMessage> GetAdminItems() => 
         GetAdminItems(Array.Empty<(string key, string value)>());
 
-    public async Task<HttpResponseMessage> GetAdminItems(params (string key, string value)[] queries)
+    public Task<HttpResponseMessage> GetAdminItems(params (string key, string value)[] queries) => 
+        GetAdminItems((null, 50), queries);
+
+    public async Task<HttpResponseMessage> GetAdminItems((string? after, int pageSize) pagination,
+        params (string key, string value)[] queries)
     {
         var client = GetClient();
-        var queryBuilder = new QueryBuilder(queries.ToDictionary(x => x.key, x => x.value));
+        var queryBuilder = new QueryBuilder(queries.ToDictionary(x => x.key, x => x.value)) { { "pageSize", pagination.pageSize.ToString() } };
+        if(pagination.after is not null)
+            queryBuilder.Add("after", pagination.after);
+            
         return await client.GetAsync($"adminItems{queryBuilder}");
     }
 
-    
+
     public async Task<HttpResponseMessage> GetColors()
     {
         var client = GetClient();
