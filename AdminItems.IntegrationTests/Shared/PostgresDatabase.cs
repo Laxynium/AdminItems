@@ -10,20 +10,12 @@ namespace AdminItems.IntegrationTests.Shared;
 
 public class PostgresDatabase : IAsyncLifetime
 {
-    /*https://github.com/testcontainers/testcontainers-dotnet/issues/750#issuecomment-1412257694*/
-#pragma warning disable 618
-    private readonly TestcontainerDatabase _postgresqlContainer = new ContainerBuilder<PostgreSqlTestcontainer>()
-        .WithDatabase(new PostgreSqlTestcontainerConfiguration
-        {
-            Database = "admin_items_db",
-            Username = "postgres",
-            Password = "postgres"
-        })
-        .Build();
-#pragma warning restore 618
 
+    private readonly PostgresContainerWrapper _postgresqlContainer = new(false);
     private Respawner? _respawner;
-    public string ConnectionString => _postgresqlContainer.ConnectionString;
+
+    public string ConnectionString =>
+        "Server=127.0.0.1;Port=5432;UserId=postgres;Password=postgres;Database=admin_items_db_tests";
     
     public async Task InitializeAsync()
     {
@@ -32,7 +24,7 @@ public class PostgresDatabase : IAsyncLifetime
         var migrator = Migrator.Migrator.Create(ConnectionString, "Migrations", new NullLoggerFactory());
         migrator.Migrate();
         
-        await using var connection = new NpgsqlConnection(_postgresqlContainer.ConnectionString);
+        await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync();
         _respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
         {
@@ -47,14 +39,50 @@ public class PostgresDatabase : IAsyncLifetime
 
     public async Task CleanUp()
     {
-        await using var connection = new NpgsqlConnection(_postgresqlContainer.ConnectionString);
+        await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync();
         await _respawner!.ResetAsync(connection);
     }
     
-    public Task DisposeAsync()
+    public Task DisposeAsync() => _postgresqlContainer.DisposeAsync().AsTask();
+
+    private class PostgresContainerWrapper : IAsyncDisposable
     {
-        return _postgresqlContainer.DisposeAsync().AsTask();
+        private TestcontainerDatabase? _postgresqlContainer;
+        private readonly bool _useExistingContainer;
+
+        public PostgresContainerWrapper(bool useExistingContainer)
+        {
+            _useExistingContainer = useExistingContainer;
+        }
+
+        public async Task StartAsync()
+        {
+            if (_useExistingContainer)
+            {
+                return;
+            }
+
+            /*https://github.com/testcontainers/testcontainers-dotnet/issues/750#issuecomment-1412257694*/
+#pragma warning disable 618
+            _postgresqlContainer = new ContainerBuilder<PostgreSqlTestcontainer>()
+                .WithDatabase(new PostgreSqlTestcontainerConfiguration
+                {
+                    Database = "admin_items_db",
+                    Username = "postgres",
+                    Password = "postgres"
+                })
+                .Build();
+#pragma warning restore 618
+            await _postgresqlContainer.StartAsync();
+            
+        }
+        
+        public async ValueTask DisposeAsync()
+        {
+            if (_postgresqlContainer is not null)
+                await _postgresqlContainer.DisposeAsync();
+        }
     }
 }
 
