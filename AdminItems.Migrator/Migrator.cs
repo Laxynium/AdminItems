@@ -24,6 +24,7 @@ public class Migrator
                 .PostgresqlDatabase(connectionString)
                 .WithScriptsFromFileSystem(scriptsPath)
                 .LogToAutodetectedLog()
+                .WithExecutionTimeout(TimeSpan.FromSeconds(180))
                 .BuildConfiguration();
 
         return new Migrator(configuration, loggerFactory);
