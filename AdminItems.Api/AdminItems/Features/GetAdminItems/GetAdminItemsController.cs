@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using SqlKata;
 using SqlKata.Compilers;
@@ -25,16 +26,11 @@ public class GetAdminItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Response>> Get([FromQuery] Request request)
     {
-        var ordering = ParseOrderBy(request.OrderBy);
+        var (_, isFailure, sorting, error) = AdminItemsSorting.Parse(request.OrderBy);
+        if (isFailure)
+            return error;
 
-        if (ordering is not {ordering:{order:{} order, column:{} column}})
-            return ordering.error!;
-
-        var query = new Query("admin_items")
-            .Select("id", "code", "name", "color");
-
-        query = SortBy(query, column);
-        query = query.Slice(column: column);
+        var query = sorting.Apply(new Query("admin_items").Select("id", "code", "name", "color"));
         
         var postgresCompiler = new PostgresCompiler();
         var db = new QueryFactory(_connection, postgresCompiler);
@@ -47,44 +43,5 @@ public class GetAdminItemsController : ControllerBase
         
         return Ok(new Response(items));
     }
-
-    private static ((string column, string order)? ordering, BadRequestObjectResult? error) ParseOrderBy(string orderBy)
-    {
-        var split = orderBy.Split(" ");
-        if (split.Length != 2)
-            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"should be in format [column] [asc|desc]"));
-        
-        var column = split[0];
-        var order = split[1];
-
-        if (!new[] { "code", "name", "color" }.Contains(column))
-            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"Column {column} was not found"));
-
-        if(!new []{"asc", "desc"}.Contains(order))
-            return (null, ErrorResponses.InvalidOrderBy(orderBy, $"Order {order} was not found"));
-        
-        return ((column, order), null);
-    }
-
-    private static Query SortBy(Query query, string fieldName)
-    {
-        switch (fieldName)
-        {
-            case "code":
-                query.OrderBy("code");
-                break;
-            case "name":
-                query.OrderBy("name");
-                break;
-            case "color":
-                query.OrderBy("color");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(fieldName));
-        }
-
-        return query;
-    }
-
     private record AdminItemRecord(long Id, string Code, string Name, string Color, long RowNumber);
 }
