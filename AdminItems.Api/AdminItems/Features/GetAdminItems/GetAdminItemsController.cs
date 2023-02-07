@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.ComponentModel.DataAnnotations;
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using SqlKata;
@@ -7,9 +8,8 @@ using SqlKata.Execution;
 
 namespace AdminItems.Api.AdminItems.Features.GetAdminItems;
 
-public record Request(int PageSize = 25, string? Before = null, string? After = null, string OrderBy = "code asc");
+public record Request([Range(1, 200)]int PageSize = 25, string? Before = null, string? After = null, string OrderBy = "code asc");
 public record Response(IReadOnlyList<AdminItemResponse> Items, string? Before = null, string? After = null);
-
 public record AdminItemResponse(long Id, string Code, string Name, string Color);
 
 [ApiController]

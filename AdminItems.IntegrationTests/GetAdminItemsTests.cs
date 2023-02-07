@@ -285,5 +285,20 @@ public class GetAdminItemsTests : IntegrationTest
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
 
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(0)]
+    [InlineData(201)]
+    public async Task invalid_page_size(int pageSize)
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(1),
+            new AdminItem("BBB13", "Admin Item1", "Some comment 1", "red")));
+        
+        //when
+        var response = await Api.GetAdminItems((after: null, before: null, pageSize), ("orderBy","code asc"));
+        //then
+        response.Should().Be400BadRequest().And.HaveError("pageSize", "*");
+    }
+
 
 }
