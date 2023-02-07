@@ -21,16 +21,33 @@ public class GetAdminItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Response>> Get()
     {
-        var result = await _connection.QueryAsync<AdminItemResponse>(@"
+        var sqlBuilder = new SqlBuilder();
+        sqlBuilder = SortBy(sqlBuilder, "code");
+        
+        var template = GetTemplate(sqlBuilder);
+        var result = await _connection.QueryAsync<AdminItemResponse>(
+            template.RawSql, template.Parameters);
+        return Ok(new Response(result.ToList()));
+    }
+
+    private static SqlBuilder.Template GetTemplate(SqlBuilder builder) =>
+        new(builder,@"
 SELECT ""id""
     , ""code""
     , ""name""
     , ""color""
 FROM ""admin_items""
-ORDER BY ""code""");
-        return Ok(new Response(result.ToList()));
-    }
+/**orderby**/", new { });
 
-    private static AdminItemResponse MapToResponse(AdminItemId id, AdminItem x) =>
-        new(id, x.Code, x.Name, x.Color, x.Comments);
+    private static SqlBuilder SortBy(SqlBuilder sqlBuilder, string fieldName)
+    {
+        switch (fieldName)
+        {
+            case "code":
+                sqlBuilder.OrderBy("code");
+                break;
+        }
+
+        return sqlBuilder;
+    }
 }
