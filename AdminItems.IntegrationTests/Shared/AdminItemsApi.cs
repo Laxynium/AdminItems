@@ -33,9 +33,9 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
         GetAdminItems(Array.Empty<(string key, string value)>());
 
     public Task<HttpResponseMessage> GetAdminItems(params (string key, string value)[] queries) => 
-        GetAdminItems((null, 50), queries);
+        GetAdminItems((null, null, 50), queries);
 
-    public async Task<HttpResponseMessage> GetAdminItems((string? after, int pageSize) pagination,
+    public async Task<HttpResponseMessage> GetAdminItems((string? after, string? before, int pageSize) pagination,
         params (string key, string value)[] queries)
     {
         var client = GetClient();

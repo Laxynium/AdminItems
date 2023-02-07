@@ -158,7 +158,7 @@ public class GetAdminItemsTests : IntegrationTest
             new AdminItem("AAA11", "Admin Item3", "Some comment 3", "green")));
         
         //when
-        var response = await Api.GetAdminItems((null, 2), ("orderBy","color desc"));
+        var response = await Api.GetAdminItems((after: null, before: null, 2), ("orderBy","color desc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -173,7 +173,7 @@ public class GetAdminItemsTests : IntegrationTest
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
         //when
-        response = await Api.GetAdminItems(("green", 2), ("orderBy","color desc"));
+        response = await Api.GetAdminItems((after: "green", before: null, 2), ("orderBy","color desc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -200,7 +200,7 @@ public class GetAdminItemsTests : IntegrationTest
             new AdminItem("AAA11", "Admin Item3", "Some comment 3", "green")));
         
         //when
-        var response = await Api.GetAdminItems((null, 1), ("orderBy","name asc"));
+        var response = await Api.GetAdminItems((after: null, before: null, 1), ("orderBy","name asc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -214,7 +214,7 @@ public class GetAdminItemsTests : IntegrationTest
             }, opt => opt.WithStrictOrderingFor(x => x.items));
         
         //when
-        response = await Api.GetAdminItems(("Admin Item1", 2), ("orderBy","name asc"));
+        response = await Api.GetAdminItems((after: "Admin Item1", before: null, 2), ("orderBy","name asc"));
         //then
         response.Should().Be200Ok()
             .And.BeAs(new
@@ -228,5 +228,62 @@ public class GetAdminItemsTests : IntegrationTest
                 before = "Admin Item2"
             }, opt => opt.WithStrictOrderingFor(x => x.items));
     }
+    
+    [Fact]
+    public async Task cursor_based_pagination_on_code_going_backwards()
+    {
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(1),
+            new AdminItem("BBB13", "Admin Item1", "Some comment 1", "red")));
+
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(2),
+            new AdminItem("BBB12", "Admin Item2", "Some comment 2", "blue")));
+
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(3),
+            new AdminItem("AAA11", "Admin Item3", "Some comment 3", "green")));
+        
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(4),
+            new AdminItem("AAA05", "Admin Item4", "Some comment 4", "black")));
+        
+        var response = await Api.GetAdminItems((after: null, before: null, 2), ("orderBy","code asc"));
+        response.Should().Be200Ok()
+            .And.BeAs(new
+            {
+                items = new[]
+                {
+                    new { id = 4, code = "AAA05", name = "Admin Item4", color = "black" },
+                    new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
+                },
+                after = "AAA11",
+                before = "AAA05"
+            }, opt => opt.WithStrictOrderingFor(x => x.items));
+        
+        response = await Api.GetAdminItems((after: "AAA11", before: null, 1), ("orderBy","code asc"));
+        response.Should().Be200Ok()
+            .And.BeAs(new
+            {
+                items = new[]
+                {
+                    new { id = 2, code = "BBB12", name = "Admin Item2", color = "blue" },
+                },
+                after = "BBB12",
+                before = "BBB12"
+            }, opt => opt.WithStrictOrderingFor(x => x.items));
+        
+        //when
+        response = await Api.GetAdminItems((after: null, before: "BBB12", 2), ("orderBy","code asc"));
+        //then
+        response.Should().Be200Ok()
+            .And.BeAs(new
+            {
+                items = new[]
+                {
+                    new { id = 4, code = "AAA05", name = "Admin Item4", color = "black" },
+                    new { id = 3, code = "AAA11", name = "Admin Item3", color = "green" }
+                },
+                after = "AAA11",
+                before = "AAA05"
+            }, opt => opt.WithStrictOrderingFor(x => x.items));
+    }
+
 
 }
