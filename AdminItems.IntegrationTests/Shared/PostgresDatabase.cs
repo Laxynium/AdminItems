@@ -11,7 +11,7 @@ namespace AdminItems.IntegrationTests.Shared;
 public class PostgresDatabase : IAsyncLifetime
 {
 
-    private readonly PostgresContainerWrapper _postgresqlContainer = new(false);
+    private readonly PostgresContainerWrapper _postgresqlContainer = new(true);
     private Respawner? _respawner;
 
     public string ConnectionString => _postgresqlContainer.ConnectionString;

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -8,6 +9,8 @@ using AdminItems.Tests.Fakes;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AdminItems.Tests.Shared;
@@ -43,6 +46,24 @@ public class AdminItemsApi : WebApplicationFactory<Api.Program>
             services.RemoveAll<IAdminItemIdGenerator>();
             services.TryAddSingleton<IAdminItemIdGenerator>(_adminItemIdGenerator);
         });
+        builder.ConfigureTestServices(services =>
+        {
+            services.Configure<TestAuthHandlerOptions>(options => options.DefaultUserId = "1");
+
+            services.AddAuthentication(opt =>
+                {
+                    opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                    opt.DefaultScheme = TestAuthHandler.AuthenticationScheme;
+                    opt.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                })
+                .AddScheme<TestAuthHandlerOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+        });
+    }
+
+    protected override void ConfigureClient(HttpClient client)
+    {
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Test");
     }
 
     public AdminItemsApi WillGenerateAdminItemId(params long[] ids)
