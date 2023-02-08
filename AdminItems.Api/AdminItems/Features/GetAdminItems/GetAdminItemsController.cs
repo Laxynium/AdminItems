@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using SqlKata;
@@ -20,6 +21,7 @@ public record AdminItemResponse(long Id, string Code, string Name, string Color)
 
 [ApiController]
 [Route("adminItems")]
+[Authorize]
 public class GetAdminItemsController : ControllerBase
 {
     private readonly NpgsqlConnection _connection;

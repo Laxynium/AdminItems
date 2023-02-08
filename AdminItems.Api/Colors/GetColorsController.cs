@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -10,6 +11,7 @@ public record ColorDto(long Id, string Name);
 
 [ApiController]
 [Route("colors")]
+[Authorize]
 public class GetColorsController : ControllerBase
 {
     private readonly NpgsqlConnection _connection;

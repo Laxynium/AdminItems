@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -7,13 +7,16 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <AnalysisMode>Recommended</AnalysisMode>
         <AnalysisModeStyle>Recommended</AnalysisModeStyle>
-    </PropertyGroup>
+      <UserSecretsId>fba82e30-caad-4ae2-9042-c8e27f5ad7c1</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="CSharpFunctionalExtensions" Version="2.37.0" />
         <PackageReference Include="Dapper" Version="2.0.123" />
         <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78" />
         <PackageReference Include="IdGen" Version="3.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.13" />
         <PackageReference Include="SqlKata" Version="2.4.0" />
         <PackageReference Include="SqlKata.Execution" Version="2.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />

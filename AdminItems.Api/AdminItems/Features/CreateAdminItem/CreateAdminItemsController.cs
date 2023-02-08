@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AdminItems.Api.Colors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminItems.Api.AdminItems.Features.CreateAdminItem;
@@ -13,6 +14,7 @@ public record AdminItemDto(
 
 [ApiController]
 [Route("adminItems")]
+[Authorize(Roles = "Admin-ManageItems")]
 public class CreateAdminItemsController : ControllerBase
 {
     private readonly IAdminItemsStore _adminItemsStore;
