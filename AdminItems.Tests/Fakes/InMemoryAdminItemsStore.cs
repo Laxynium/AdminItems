@@ -11,25 +11,23 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
         return Task.CompletedTask;
     }
 
-    public Task Update(AdminItemId id, long version, AdminItem adminItem)
+
+    public Task Update(AdminItemEntity entity)
     {
-        if (ContainsKey(AdminItemId.Create(id)))
+        if (ContainsKey(entity.Id))
         {
-            base[AdminItemId.Create(id)] = adminItem;
+            base[entity.Id] = entity.Value;
         }
         return Task.CompletedTask;
     }
 
-    public Task<bool> Contains(AdminItemId id) => 
-        Task.FromResult(ContainsKey(id));
-
-    public async Task<(AdminItem adminItem, long version)?> Find(AdminItemId id)
+    public Task<AdminItemEntity?> Find(AdminItemId id)
     {
-        if (await Contains(id))
+        if (ContainsKey(id))
         {
-            return (base[id], 1);
+            var adminItem = base[id];
+            return Task.FromResult((AdminItemEntity?)new AdminItemEntity(id, 1, adminItem));
         }
-
-        return null;
+        return Task.FromResult((AdminItemEntity?)null);
     }
 }

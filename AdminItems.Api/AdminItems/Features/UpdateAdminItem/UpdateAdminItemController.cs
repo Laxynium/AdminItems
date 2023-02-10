@@ -35,13 +35,12 @@ public class UpdateAdminItemController : ControllerBase
         if (color is null)
             return ErrorResponses.ColorNotFound(dto.ColorId);
         
-        var maybeAdminItem = await _adminItemsStore.Find(id);
-        if (maybeAdminItem is null)
+        var adminItemEntity = await _adminItemsStore.Find(id);
+        if (adminItemEntity is null)
             return ErrorResponses.AdminItemNotFound(adminItemId);
-        var (_, version) = maybeAdminItem.Value;
         
         var updatedAdminItem = new AdminItem(dto.Code, dto.Name, dto.Comments ?? string.Empty, color!.Name);
-        await _adminItemsStore.Update(id, version, updatedAdminItem);
+        await _adminItemsStore.Update(adminItemEntity.WithValue(updatedAdminItem));
         return Ok();
     }
 }
