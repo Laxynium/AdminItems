@@ -1,16 +1,22 @@
+using AdminItems.Api.Framework;
 using Dapper;
 using Npgsql;
 
 namespace AdminItems.Api.AdminItems;
 
+public class AdminItemEntity : Entity<AdminItemId, long, AdminItem, AdminItemEntity>
+{
+    public AdminItemEntity(AdminItemId id, long version, AdminItem value) : base(id, version, value)
+    {
+    }
+}
 public interface IAdminItemsStore
 {
     public Task Add(AdminItemId id, AdminItem adminItem);
 
-    Task Update(AdminItemId id, long version, AdminItem adminItem);
+    Task Update(AdminItemEntity entity);
 
-    Task<bool> Contains(AdminItemId id);
-    Task<(AdminItem adminItem, long version)?> Find(AdminItemId id);
+    Task<AdminItemEntity?> Find(AdminItemId id);
 }
 
 internal sealed class SqlAdminItemsStore : IAdminItemsStore
@@ -38,7 +44,7 @@ internal sealed class SqlAdminItemsStore : IAdminItemsStore
                 });
         });
 
-    public async Task Update(AdminItemId id, long version, AdminItem adminItem)
+    public async Task Update(AdminItemEntity entity)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         
@@ -53,30 +59,21 @@ WHERE ""id"" = @Id
 AND ""xmin"" = cast(@Version as int)",
             new
             {
-                Id = id.Value,
-                Version = version,
-                Code = adminItem.Code,
-                Name = adminItem.Name,
-                Comments = adminItem.Comments,
-                Color = adminItem.Color
+                Id = entity.Id.Value,
+                Version = entity.Version,
+                Code = entity.Value.Code,
+                Name = entity.Value.Name,
+                Comments = entity.Value.Comments,
+                Color = entity.Value.Color
             });
 
         if (result == 0)
         {
-            throw new OptimisticConcurrencyException("update", "AdminItem", id.ToString());
+            throw new OptimisticConcurrencyException("update", "AdminItem", entity.Id.ToString());
         }
     }
 
-    public async Task<bool> Contains(AdminItemId id)
-    {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        var result = await connection.ExecuteScalarAsync<bool>(
-            @"SELECT 1 FROM ""admin_items"" ai WHERE ai.id = @Id",
-            new { Id = id.Value });
-        return result;
-    }
-
-    public async Task<(AdminItem adminItem, long version)?> Find(AdminItemId id)
+    public async Task<AdminItemEntity?> Find(AdminItemId id)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
 
@@ -97,12 +94,11 @@ WHERE ""id"" = @Id", new {Id = id.Value});
             return null;
         }
 
-        return (new AdminItem(
-                adminItemRecord.Value.code,
-                adminItemRecord.Value.name,
-                adminItemRecord.Value.comments,
-                adminItemRecord.Value.color),
-            adminItemRecord.Value.version);
+        return new AdminItemEntity(id, adminItemRecord.Value.version, new AdminItem(
+            adminItemRecord.Value.code,
+            adminItemRecord.Value.name,
+            adminItemRecord.Value.comments,
+            adminItemRecord.Value.color));
     }
 
     private static async Task HandleInsertErrors(AdminItemId id, Func<Task> action)
