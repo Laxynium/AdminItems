@@ -32,23 +32,30 @@ internal sealed class SqlAdminItemsStore : IAdminItemsStore
         await HandleInsertErrors(id, async () =>
         {
             await using var connection = new NpgsqlConnection(_connectionString);
-            await connection.ExecuteAsync(
-                @"INSERT INTO ""admin_items"" (""id"", ""code"", ""name"", ""comments"", ""color"") VALUES (@Id, @Code, @Name, @Comments, @Color)",
-                new
-                {
-                    Id = id.Value,
-                    Code = adminItem.Code,
-                    Name = adminItem.Name,
-                    Comments = adminItem.Comments,
-                    Color = adminItem.Color
-                });
+            
+            var statement = @"
+INSERT INTO ""admin_items"" 
+    (""id"", ""code"", ""name"", ""comments"", ""color"") 
+VALUES 
+    (@Id, @Code, @Name, @Comments, @Color)";
+            
+            var parameters = new
+            {
+                Id = id.Value,
+                Code = adminItem.Code,
+                Name = adminItem.Name,
+                Comments = adminItem.Comments,
+                Color = adminItem.Color
+            };
+            
+            await connection.ExecuteAsync(statement, parameters);
         });
 
     public async Task Update(AdminItemEntity entity)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
-        
-        var result = await connection.ExecuteAsync(@"
+
+        var statement = @"
 UPDATE ""admin_items"" ai
 SET 
     ""code"" = @Code,
@@ -56,16 +63,17 @@ SET
     ""comments"" = @Comments,
     ""color"" = @Color
 WHERE ""id"" = @Id
-AND ""xmin"" = cast(@Version as int)",
-            new
-            {
-                Id = entity.Id.Value,
-                Version = entity.Version,
-                Code = entity.Value.Code,
-                Name = entity.Value.Name,
-                Comments = entity.Value.Comments,
-                Color = entity.Value.Color
-            });
+AND ""xmin"" = cast(@Version as int)";
+        var parameters = new
+        {
+            Id = entity.Id.Value,
+            Version = entity.Version,
+            Code = entity.Value.Code,
+            Name = entity.Value.Name,
+            Comments = entity.Value.Comments,
+            Color = entity.Value.Color
+        };
+        var result = await connection.ExecuteAsync(statement, parameters);
 
         if (result == 0)
         {
@@ -77,9 +85,7 @@ AND ""xmin"" = cast(@Version as int)",
     {
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var adminItemRecord = await connection
-            .QuerySingleOrDefaultAsync<(long id, long version, string code, string name, string comments, string color
-                )?>(@"
+        var statement = @"
 SELECT  ""id""
     ,   ""xmin"" 
     ,   ""code""
@@ -87,12 +93,20 @@ SELECT  ""id""
     ,   ""comments""
     ,   ""color""
 FROM ""admin_items""
-WHERE ""id"" = @Id", new {Id = id.Value});
+WHERE ""id"" = @Id";
+
+        var parameters = new { Id = id.Value };
+
+        var adminItemRecord = await connection.QuerySingleOrDefaultAsync<(
+            long id,
+            long version,
+            string code,
+            string name,
+            string comments,
+            string color)?>(statement, parameters);
 
         if (adminItemRecord is null)
-        {
             return null;
-        }
 
         return new AdminItemEntity(id, adminItemRecord.Value.version, new AdminItem(
             adminItemRecord.Value.code,
