@@ -31,7 +31,10 @@ builder.Services.AddIdentity(builder.Configuration);
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(cfg =>
+{
+    cfg.Filters.Add<OptimisticConcurrencyExceptionFilter>();
+});
 
 builder.Services.AddSwagger();
 

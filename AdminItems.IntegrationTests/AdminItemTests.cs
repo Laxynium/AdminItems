@@ -73,6 +73,37 @@ public class AdminItemTests : IntegrationTest
                 }
             });
     }
+    
+    [Theory]
+    [InlineData("CODE_1", "admin_item_2", 3)]
+    [InlineData("CODE_3", "admin_item_1", 3)]
+    public async Task conflict_when_duplicates_detected_on_add(string code, string name, int colorId)
+    {
+        await ThereIsColor(new Color(3, "blue"));
+        await ThereIsColor(new Color(5, "purple"));
+        await ThereIsAnAdminItem(new
+        {
+            code = "CODE_1",
+            name = "admin_item_1",
+            colorId = 3
+        });
+
+        var response = await Api.PostAdminItem(new
+        {
+            code = code,
+            name = name,
+            colorId = colorId
+        });
+        
+        response.Should().Be409Conflict();
+    }
+    
+    private async Task<long> ThereIsAnAdminItem(object request)
+    {
+        var response = await Api.PostAdminItem(request);
+        response.Should().Be201Created();
+        return await GetId(response);
+    }
 
     private static async Task<long> GetId(HttpResponseMessage response)
     {

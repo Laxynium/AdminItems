@@ -11,7 +11,7 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
         return Task.CompletedTask;
     }
 
-    public Task Update(AdminItemId id, AdminItem adminItem)
+    public Task Update(AdminItemId id, long version, AdminItem adminItem)
     {
         if (ContainsKey(AdminItemId.Create(id)))
         {
@@ -22,4 +22,14 @@ public class InMemoryAdminItemsStore : Dictionary<AdminItemId, AdminItem>, IAdmi
 
     public Task<bool> Contains(AdminItemId id) => 
         Task.FromResult(ContainsKey(id));
+
+    public async Task<(AdminItem adminItem, long version)?> Find(AdminItemId id)
+    {
+        if (await Contains(id))
+        {
+            return (base[id], 1);
+        }
+
+        return null;
+    }
 }

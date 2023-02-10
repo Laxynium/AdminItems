@@ -35,29 +35,55 @@ public class AdminItemsStoreTests : IntegrationTest
     public async Task admin_item_is_updated()
     {
         await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(25), new AdminItem("FAD123", "Item_X_15", "", "aqua")));
-
-        var adminItem = new AdminItem("AA123", "Item_Y_20", "Xyz", "azure");
-        await Run<IAdminItemsStore>(store => store.Update(AdminItemId.Create(25), adminItem));
+        var (_, version) = await FindAdminItem(AdminItemId.Create(25));
+        
+        var updatedAdminItem = new AdminItem("AA123", "Item_Y_20", "Xyz", "azure");
+        await Run<IAdminItemsStore>(store => store.Update(AdminItemId.Create(25), version, updatedAdminItem));
         
         var adminItems = await GetAdminItems();
         adminItems.Should().HaveCount(1).And.ContainEquivalentOf(new AdminItemDto(
             25, 
-            adminItem.Code, 
-            adminItem.Name, 
-            adminItem.Color, 
-            adminItem.Comments));
+            updatedAdminItem.Code, 
+            updatedAdminItem.Name, 
+            updatedAdminItem.Color, 
+            updatedAdminItem.Comments));
+    }
+
+    [Fact]
+    public async Task there_is_conflict_error_when_trying_to_update_stale_version_of_admin_item()
+    {
+        const uint maxUInt = 4_294_967_295;
+        await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(maxUInt), new AdminItem("FAD123", "Item_X_15", "", "aqua")));
+        
+        var (_, version) = await FindAdminItem(AdminItemId.Create(maxUInt));
+        await Run<IAdminItemsStore>(store => store.Update(AdminItemId.Create(maxUInt),
+            version, new AdminItem("AA123", "Item_X_15", "", "aqua")));
+        
+        var action = () => Run<IAdminItemsStore>(store => store.Update(AdminItemId.Create(maxUInt),
+            version, new AdminItem("BBB131", "Item_X_15", "", "aqua")));
+
+        await action.Should().ThrowAsync<OptimisticConcurrencyException>().WithMessage("*update*");
     }
 
     [Theory]
     [InlineData(15, true)]
     [InlineData(25, true)]
     [InlineData(123, false)]
-    public async Task contains_admin_items(long id, bool expectedContains)
+    public async Task find_admin_items(long id, bool expectedContains)
     {
         await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(25), new AdminItem("FAD123", "Item_X_15", "", "aqua")));
         await Run<IAdminItemsStore>(store => store.Add(AdminItemId.Create(15), new AdminItem("AAA123", "Item_Y_25", "X", "yellow")));
         
-        (await Run<IAdminItemsStore, bool>(store => store.Contains(AdminItemId.Create(id)))).Should().Be(expectedContains);
+        var result = await Run<IAdminItemsStore, (AdminItem AdminItem, long version)?>(store => store.Find(AdminItemId.Create(id)));
+
+        if (expectedContains)
+        {
+            result.Should().NotBeNull();    
+        }
+        else
+        {
+            result.Should().BeNull();
+        }
     }
 
     private async Task<List<AdminItemDto>> GetAdminItems()
@@ -67,6 +93,13 @@ public class AdminItemsStoreTests : IntegrationTest
             "SELECT ai.id, ai.code, ai.name, ai.color, ai.comments  FROM admin_items ai");
         return result.ToList();
     }
-    
+
+    private async Task<(AdminItem adminItem, long version)> FindAdminItem(AdminItemId id)
+    {
+        var adminItem = await Run<IAdminItemsStore, (AdminItem adminItem, long version)?>(store => store.Find(id));
+        adminItem.Should().NotBeNull();
+        return adminItem!.Value;
+    }
+
     private record AdminItemDto(long Id, string Code, string Name, string Color, string Comments);
 }

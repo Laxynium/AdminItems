@@ -30,17 +30,18 @@ public class UpdateAdminItemController : ControllerBase
     public async Task<ActionResult> Put([FromRoute]long adminItemId, [FromBody] AdminItemDto dto)
     {
         var id = AdminItemId.Create(adminItemId);
-        if (!await _adminItemsStore.Contains(id))
-        {
-            return ErrorResponses.AdminItemNotFound(adminItemId);
-        }
         
         var color = await _colorsStore.Find(dto.ColorId);
         if (color is null)
             return ErrorResponses.ColorNotFound(dto.ColorId);
         
-        var adminItem = new AdminItem(dto.Code, dto.Name, dto.Comments ?? string.Empty, color!.Name);
-        await _adminItemsStore.Update(id, adminItem);
+        var maybeAdminItem = await _adminItemsStore.Find(id);
+        if (maybeAdminItem is null)
+            return ErrorResponses.AdminItemNotFound(adminItemId);
+        var (_, version) = maybeAdminItem.Value;
+        
+        var updatedAdminItem = new AdminItem(dto.Code, dto.Name, dto.Comments ?? string.Empty, color!.Name);
+        await _adminItemsStore.Update(id, version, updatedAdminItem);
         return Ok();
     }
 }
